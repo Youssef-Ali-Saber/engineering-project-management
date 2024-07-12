@@ -1,0 +1,76 @@
+﻿@model List<PM01.Models.Project>
+
+@{
+    ViewData["Title"] = "Projects List";
+}
+
+<h1 class="text-center mt-3">Projects List</h1>
+
+<div class="container mt-4">
+    <div class="row mb-3">
+        <div class="col text-right">
+            <a asp-action="Create" class="btn btn-success"><i class="fa fa-plus-circle"></i> Create New Project</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <table id="projectsTable" class="table table-hover table-bordered text-center">
+                <thead class="thead-dark">
+                    <tr>
+                        <th >Project Name</th>
+                        <th >Location</th>
+                        <th >Project Nature</th>
+                        <th >Project Type</th>
+                        <th >Project Value</th>
+                        <th >Project Stage</th>
+                        <th width="150px"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var project in Model)
+                    {
+                        <tr>
+                            <td>@project.ProjectName</td>
+                            <td>@project.Location</td>
+                            <td>@project.ProjectNature</td>
+                            <td>@project.ProjectType</td>
+                            <td>@project.ProjectValue.ToString("C")</td>
+                            <td>@project.ProjectStage</td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@project.Id" class="btn btn-dark btn-sm mr-1"><i class="fa fa-edit"></i> Edit</a>
+                                <a asp-action="Details" asp-route-id="@project.Id" class="btn btn-info btn-sm mr-1"><i class="fa fa-eye"></i> View</a>
+                                <form asp-action="Delete" asp-route-id="@project.Id" method="post" class="d-inline-block" onsubmit="return confirm('Are you sure you want to delete this project?');">
+                                    <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css" />
+
+    <script>
+        $(document).ready(function () {
+            $('#projectsTable').DataTable({
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true
+            });
+        });
+    </script>
+}

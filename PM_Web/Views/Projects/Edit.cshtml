@@ -1,0 +1,277 @@
+﻿@model PM01.Models.Project
+
+@{
+    ViewData["Title"] = "Edit Project";
+}
+
+<div class="container">
+    <h2 class="text-center mt-4">@ViewData["Title"]</h2>
+
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8">
+            <div class="card shadow border-0">
+
+                <div class="card-body p-4">
+                    <form asp-action="Edit" method="post" id="editForm" class="row needs-validation" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="form-group mb-3 col-md-6">
+                            <label asp-for="ProjectName" class="control-label font-weight-bold"></label>
+                            <input asp-for="ProjectName" class="form-control form-control-lg" placeholder="Enter project name" />
+                            <span asp-validation-for="ProjectName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mb-3 col-md-6">
+                            <label asp-for="Location" class="control-label font-weight-bold"></label>
+                            <input asp-for="Location" class="form-control form-control-lg" placeholder="Enter location" />
+                            <span asp-validation-for="Location" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3 col-md-6">
+                            <label asp-for="ProjectNature" class="control-label font-weight-bold"></label>
+                            <input asp-for="ProjectNature" class="form-control form-control-lg" placeholder="Enter project nature" />
+                            <span asp-validation-for="ProjectNature" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mb-3 col-md-6">
+                            <label asp-for="ProjectType" class="control-label font-weight-bold"></label>
+                            <input asp-for="ProjectType" class="form-control form-control-lg" placeholder="Enter project type" />
+                            <span asp-validation-for="ProjectType" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3 col-md-6">
+                            <label asp-for="JVPartners" class="control-label font-weight-bold"></label>
+                            <input asp-for="JVPartners" class="form-control form-control-lg" placeholder="Enter number of JV partners" />
+                            <span asp-validation-for="JVPartners" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mb-3 col-md-6">
+                            <label asp-for="ProjectValue" class="control-label font-weight-bold"></label>
+                            <input asp-for="ProjectValue" class="form-control form-control-lg" placeholder="Enter project value" />
+                            <span asp-validation-for="ProjectValue" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3 col-md-6">
+                            <label asp-for="ProjectStage" class="control-label font-weight-bold"></label>
+                            <input asp-for="ProjectStage" class="form-control form-control-lg" placeholder="Enter project stage" />
+                            <span asp-validation-for="ProjectStage" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mb-3 col-md-6">
+                            <label asp-for="DeliveryStrategies" class="control-label font-weight-bold"></label>
+                            <input asp-for="DeliveryStrategies" class="form-control form-control-lg" placeholder="Enter delivery strategies" />
+                            <span asp-validation-for="DeliveryStrategies" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="ContractingStrategies" class="control-label font-weight-bold"></label>
+                            <input asp-for="ContractingStrategies" class="form-control form-control-lg" placeholder="Enter contracting strategies" />
+                            <span asp-validation-for="ContractingStrategies" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="control-label font-weight-bold">Owners</label>
+                            <table class="table table-bordered">
+                                <tbody id="ownersTable">
+                                    @for (int i = 0; i < Model.Owners?.Count; i++)
+                                    {
+                                        <tr>
+                                            <td><input name="Owners[@i].Name" class="form-control form-control-lg" value="@Model.Owners[i].Name" placeholder="Enter owner name" /></td>
+                                            <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-primary" onclick="addOwnerRow()">Add Owner</button>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="control-label font-weight-bold">Scope Packages</label>
+                            <table class="table table-bordered">
+                                <tbody id="scopePackagesTable">
+                                    @for (int i = 0; i < Model.ScopePackages?.Count; i++)
+                                    {
+                                        <tr>
+                                            <td><input name="ScopePackages[@i].Name" class="form-control form-control-lg" value="@Model.ScopePackages[i].Name" placeholder="Enter scope package name" /></td>
+                                            <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-primary" onclick="addScopePackageRow()">Add Scope Package</button>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="control-label font-weight-bold">Bill of Quantities (BOQ)</label>
+                            <table class="table table-bordered">
+                                <tbody id="boqTable">
+                                    @for (int i = 0; i < Model.BOQs?.Count; i++)
+                                    {
+                                        <tr>
+                                            <td><input name="BOQs[@i].Name" class="form-control form-control-lg" value="@Model.BOQs[i].Name" placeholder="Enter BOQ name" /></td>
+                                            <td><input name="BOQs[@i].Quantity" class="form-control form-control-lg" value="@Model.BOQs[i].Quantity" placeholder="Enter quantity" /></td>
+                                            <td><input name="BOQs[@i].Cost" class="form-control form-control-lg" value="@Model.BOQs[i].Cost" placeholder="Enter cost" /></td>
+                                            <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-primary" onclick="addBOQRow()">Add BOQ</button>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="control-label font-weight-bold">Activities</label>
+                            <table class="table table-bordered">
+                                <tbody id="activitiesTable">
+                                    @for (int i = 0; i < Model.Activities?.Count; i++)
+                                    {
+                                        <tr>
+                                            <td><input name="Activities[@i].Name" class="form-control form-control-lg" value="@Model.Activities[i].Name" placeholder="Enter activity name" /></td>
+                                            <td><input name="Activities[@i].StartDate" type="date" class="form-control form-control-lg" value="@Model.Activities[i].StartDate.ToString("yyyy-MM-dd")" /></td>
+                                            <td><input name="Activities[@i].EndDate" type="date" class="form-control form-control-lg" value="@Model.Activities[i].EndDate.ToString("yyyy-MM-dd")" /></td>
+                                            <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-primary" onclick="addActivityRow()">Add Activity</button>
+                        </div>
+
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-success btn-lg w-100">Save</button>
+                        </div>
+
+                        <input type="hidden" id="removedItems" name="RemovedItems" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="text-center mt-3">
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function addOwnerRow() {
+            var table = document.getElementById("ownersTable");
+            var rowCount = table.rows.length;
+            var row = table.insertRow(rowCount);
+            var cell1 = row.insertCell(0);
+            var element1 = document.createElement("input");
+            element1.type = "text";
+            element1.name = "Owners[" + rowCount + "].Name";
+            element1.className = "form-control";
+            element1.placeholder = "Enter owner name";
+            cell1.appendChild(element1);
+            var cell2 = row.insertCell(1);
+            var button = document.createElement("button");
+            button.type = "button";
+            button.className = "btn btn-danger";
+            button.onclick = function () { removeRow(this) };
+            button.innerHTML = "Remove";
+            cell2.appendChild(button);
+        }
+
+        function addScopePackageRow() {
+            var table = document.getElementById("scopePackagesTable");
+            var rowCount = table.rows.length;
+            var row = table.insertRow(rowCount);
+            var cell1 = row.insertCell(0);
+            var element1 = document.createElement("input");
+            element1.type = "text";
+            element1.name = "ScopePackages[" + rowCount + "].Name";
+            element1.className = "form-control";
+            element1.placeholder = "Enter scope package name";
+            cell1.appendChild(element1);
+            var cell2 = row.insertCell(1);
+            var button = document.createElement("button");
+            button.type = "button";
+            button.className = "btn btn-danger";
+            button.onclick = function () { removeRow(this) };
+            button.innerHTML = "Remove";
+            cell2.appendChild(button);
+        }
+
+        function addBOQRow() {
+            var table = document.getElementById("boqTable");
+            var rowCount = table.rows.length;
+            var row = table.insertRow(rowCount);
+            var cell1 = row.insertCell(0);
+            var element1 = document.createElement("input");
+            element1.type = "text";
+            element1.name = "BOQs[" + rowCount + "].Name";
+            element1.className = "form-control";
+            element1.placeholder = "Enter BOQ name";
+            cell1.appendChild(element1);
+            var cell2 = row.insertCell(1);
+            var element2 = document.createElement("input");
+            element2.type = "text";
+            element2.name = "BOQs[" + rowCount + "].Quantity";
+            element2.className = "form-control";
+            element2.placeholder = "Enter quantity";
+            cell2.appendChild(element2);
+            var cell3 = row.insertCell(2);
+            var element3 = document.createElement("input");
+            element3.type = "text";
+            element3.name = "BOQs[" + rowCount + "].Cost";
+            element3.className = "form-control";
+            element3.placeholder = "Enter cost";
+            cell3.appendChild(element3);
+            var cell4 = row.insertCell(3);
+            var button = document.createElement("button");
+            button.type = "button";
+            button.className = "btn btn-danger";
+            button.onclick = function () { removeRow(this) };
+            button.innerHTML = "Remove";
+            cell4.appendChild(button);
+        }
+
+        function addActivityRow() {
+            var table = document.getElementById("activitiesTable");
+            var rowCount = table.rows.length;
+            var row = table.insertRow(rowCount);
+            var cell1 = row.insertCell(0);
+            var element1 = document.createElement("input");
+            element1.type = "text";
+            element1.name = "Activities[" + rowCount + "].Name";
+            element1.className = "form-control";
+            element1.placeholder = "Enter activity name";
+            cell1.appendChild(element1);
+            var cell2 = row.insertCell(1);
+            var element2 = document.createElement("input");
+            element2.type = "date";
+            element2.name = "Activities[" + rowCount + "].StartDate";
+            element2.className = "form-control";
+            cell2.appendChild(element2);
+            var cell3 = row.insertCell(2);
+            var element3 = document.createElement("input");
+            element3.type = "date";
+            element3.name = "Activities[" + rowCount + "].EndDate";
+            element3.className = "form-control";
+            cell3.appendChild(element3);
+            var cell4 = row.insertCell(3);
+            var button = document.createElement("button");
+            button.type = "button";
+            button.className = "btn btn-danger";
+            button.onclick = function () { removeRow(this) };
+            button.innerHTML = "Remove";
+            cell4.appendChild(button);
+        }
+
+        function removeRow(button) {
+            var row = button.parentNode.parentNode;
+            var index = row.rowIndex - 1; // Get the index of the row (subtract 1 for zero-based index)
+            row.parentNode.removeChild(row);
+
+            // Update the hidden field for removed items
+            var removedItems = document.getElementById("removedItems").value;
+            if (removedItems) {
+                removedItems += "," + index;
+            } else {
+                removedItems = index;
+            }
+            document.getElementById("removedItems").value = removedItems;
+        }
+    </script>
+}

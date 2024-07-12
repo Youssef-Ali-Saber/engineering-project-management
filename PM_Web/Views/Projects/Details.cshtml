@@ -1,0 +1,92 @@
+﻿@model PM01.Models.Project
+
+@{
+    ViewData["Title"] = "Project Details";
+}
+
+<h1 class="text-center mt-3">Project Details</h1>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h3>@Model.ProjectName</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>Location:</label>
+                        <p class="form-control-static">@Model.Location</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Project Nature:</label>
+                        <p class="form-control-static">@Model.ProjectNature</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Project Type:</label>
+                        <p class="form-control-static">@Model.ProjectType</p>
+                    </div>
+                    <div class="form-group">
+                        <label>JV Partners:</label>
+                        <p class="form-control-static">@Model.JVPartners</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Project Value:</label>
+                        <p class="form-control-static">@Model.ProjectValue.ToString("C")</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Project Stage:</label>
+                        <p class="form-control-static">@Model.ProjectStage</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Delivery Strategies:</label>
+                        <p class="form-control-static">@Model.DeliveryStrategies</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Contracting Strategies:</label>
+                        <p class="form-control-static">@Model.ContractingStrategies</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Owners:</label>
+                        <select class="form-control">
+                            @foreach (var owner in Model.Owners)
+                            {
+                                <option>@owner.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Scope Packages:</label>
+                        <select class="form-control">
+                            @foreach (var scopePackage in Model.ScopePackages)
+                            {
+                                <option>@scopePackage.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Bill of Quantities (BOQ):</label>
+                        <select class="form-control">
+                            @foreach (var boq in Model.BOQs)
+                            {
+                                <option>@boq.Name - Quantity: @boq.Quantity, Cost: @boq.Cost</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Activities:</label>
+                        <select class="form-control">
+                            @foreach (var activity in Model.Activities)
+                            {
+                                <option>@activity.Name - Start: @activity.StartDate.ToShortDateString(), End: @activity.EndDate.ToShortDateString()</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

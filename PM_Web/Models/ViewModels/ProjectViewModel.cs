@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PM01.Models.ViewModels
+namespace PM.Models.ViewModels
 {
     public class ProjectViewModel
     {
@@ -41,5 +41,14 @@ namespace PM01.Models.ViewModels
         public List<BOQ> BOQs { get; set; } = new List<BOQ>();
 
         public List<Activity> Activities { get; set; } = new List<Activity>();
+        public List<TeamMember> TeamMembers { get; set; }
+        public TeamMember TeamManager { get; set; }
+    }
+
+    public class TeamMember
+    {
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
     }
 }

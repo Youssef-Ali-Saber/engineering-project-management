@@ -1,8 +1,7 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PM01.Models;
+using PM.Models;
 
-namespace PM01.Controllers
+namespace PM.Controllers
 {
     public class HomeController : Controller
     {

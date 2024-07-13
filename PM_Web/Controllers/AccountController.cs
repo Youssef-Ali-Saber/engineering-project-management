@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using PM01.Models.ViewModels;
-using PM01.Models;
+using PM.Models.ViewModels;
+using PM.Models;
 
-namespace PM01.Controllers
+namespace PM.Controllers
 {
     public class AccountController : Controller
     {

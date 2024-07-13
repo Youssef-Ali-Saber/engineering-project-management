@@ -1,4 +1,4 @@
-﻿namespace PM01.Models.ViewModels
+﻿namespace PM.Models.ViewModels
 {
     public class LoginViewModel
     {

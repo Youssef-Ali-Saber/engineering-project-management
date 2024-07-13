@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Folder Include="SQLiteDatabase\" />
+    <Folder Include="wwwroot\uploads\" />
   </ItemGroup>
 
   <ItemGroup>

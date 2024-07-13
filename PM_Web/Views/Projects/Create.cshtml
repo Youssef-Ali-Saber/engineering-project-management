@@ -1,4 +1,4 @@
-﻿@model PM01.Models.ViewModels.ProjectViewModel
+﻿@model PM.Models.ViewModels.ProjectViewModel
 
 @{
     ViewData["Title"] = "Create Project";
@@ -65,6 +65,7 @@
                             <input asp-for="ContractingStrategies" class="form-control form-control-lg" placeholder="Enter contracting strategies" />
                             <span asp-validation-for="ContractingStrategies" class="text-danger"></span>
                         </div>
+                        <hr />
 
                         <div class="form-group mb-3">
                             <label class="control-label font-weight-bold">Owners</label>
@@ -78,6 +79,7 @@
                             </table>
                             <button type="button" class="btn btn-primary" onclick="addOwnerRow()">Add Owner</button>
                         </div>
+                        <hr />
 
                         <div class="form-group mb-3">
                             <label class="control-label font-weight-bold">Scope Packages</label>
@@ -91,6 +93,7 @@
                             </table>
                             <button type="button" class="btn btn-primary" onclick="addScopePackageRow()">Add Scope Package</button>
                         </div>
+                        <hr />
 
                         <div class="form-group mb-3">
                             <label class="control-label font-weight-bold">Bill of Quantities (BOQ)</label>
@@ -106,7 +109,7 @@
                             </table>
                             <button type="button" class="btn btn-primary" onclick="addBOQRow()">Add BOQ</button>
                         </div>
-
+                        <hr />
                         <div class="form-group mb-3">
                             <label class="control-label font-weight-bold">Activities</label>
                             <table class="table table-bordered">
@@ -120,6 +123,35 @@
                                 </tbody>
                             </table>
                             <button type="button" class="btn btn-primary" onclick="addActivityRow()">Add Activity</button>
+                        </div>
+                        <hr />
+                        <div class="form-group mb-3">
+                            <label class="control-label font-weight-bold">Team Manager</label>
+                            <div class="mb-3">
+                                <input name="TeamManager.Name" class="form-control form-control-lg" placeholder="Enter manager name" />
+                            </div>
+                            <div class="mb-3">
+                                <input name="TeamManager.Email" type="email" class="form-control form-control-lg" placeholder="Enter manager email" />
+                            </div>
+                            <div class="mb-3">
+                                <input name="TeamManager.Password" type="password" class="form-control form-control-lg" placeholder="Enter manager password" />
+                            </div>
+                        </div>
+                        <hr />
+                        <!-- Team Members -->
+                        <div class="form-group mb-3">
+                            <label class="control-label font-weight-bold">Team Members</label>
+                            <table class="table table-bordered">
+                                <tbody id="teamMembersTable">
+                                    <tr>
+                                        <td><input name="TeamMembers[0].Name" class="form-control form-control-lg" placeholder="Enter name" /></td>
+                                        <td><input name="TeamMembers[0].Email" type="email" class="form-control form-control-lg" placeholder="Enter email" /></td>
+                                        <td><input name="TeamMembers[0].Password" type="password" class="form-control form-control-lg" placeholder="Enter password" /></td>
+                                        <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-primary" onclick="addTeamMemberRow()">Add Team Member</button>
                         </div>
 
                         <div class="form-group text-center">
@@ -237,6 +269,43 @@
             element3.name = "Activities[" + rowCount + "].EndDate";
             element3.className = "form-control";
             cell3.appendChild(element3);
+            var cell4 = row.insertCell(3);
+            var button = document.createElement("button");
+            button.type = "button";
+            button.className = "btn btn-danger";
+            button.onclick = function () { removeRow(this) };
+            button.innerHTML = "Remove";
+            cell4.appendChild(button);
+        }
+        function addTeamMemberRow() {
+            var table = document.getElementById("teamMembersTable");
+            var rowCount = table.rows.length;
+            var row = table.insertRow(rowCount);
+
+            var cell1 = row.insertCell(0);
+            var element1 = document.createElement("input");
+            element1.type = "text";
+            element1.name = "TeamMembers[" + rowCount + "].Name";
+            element1.className = "form-control";
+            element1.placeholder = "Enter team member name";
+            cell1.appendChild(element1);
+
+            var cell2 = row.insertCell(1);
+            var element2 = document.createElement("input");
+            element2.type = "email";
+            element2.name = "TeamMembers[" + rowCount + "].Email";
+            element2.className = "form-control";
+            element2.placeholder = "Enter team member email";
+            cell2.appendChild(element2);
+
+            var cell3 = row.insertCell(2);
+            var element3 = document.createElement("input");
+            element3.type = "password";
+            element3.name = "TeamMembers[" + rowCount + "].Password";
+            element3.className = "form-control";
+            element3.placeholder = "Enter team member password";
+            cell3.appendChild(element3);
+
             var cell4 = row.insertCell(3);
             var button = document.createElement("button");
             button.type = "button";

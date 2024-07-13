@@ -1,0 +1,98 @@
+﻿@model PM.Models.InterfacePoint
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>InterfacePoint</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Nature" class="control-label"></label>
+                <input asp-for="Nature" class="form-control" />
+                <span asp-validation-for="Nature" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Scope" class="control-label"></label>
+                <input asp-for="Scope" class="form-control" />
+                <span asp-validation-for="Scope" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ScopePackage1" class="control-label"></label>
+                <input asp-for="ScopePackage1" class="form-control" />
+                <span asp-validation-for="ScopePackage1" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ScopePackage2" class="control-label"></label>
+                <input asp-for="ScopePackage2" class="form-control" />
+                <span asp-validation-for="ScopePackage2" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="System1" class="control-label"></label>
+                <input asp-for="System1" class="form-control" />
+                <span asp-validation-for="System1" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="System2" class="control-label"></label>
+                <input asp-for="System2" class="form-control" />
+                <span asp-validation-for="System2" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ExtraSystem" class="control-label"></label>
+                <input asp-for="ExtraSystem" class="form-control" />
+                <span asp-validation-for="ExtraSystem" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Category" class="control-label"></label>
+                <input asp-for="Category" class="form-control" />
+                <span asp-validation-for="Category" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3 col-md-6">
+                <label asp-for="Responsible" class="control-label font-weight-bold">Responsible</label>
+                <select asp-for="Responsible" class="form-control form-control-lg" asp-items="ViewBag?.ScopePackages"></select>
+                <span asp-validation-for="Responsible" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3 col-md-6">
+                <label asp-for="Consultant" class="control-label font-weight-bold">Consultant</label>
+                <select asp-for="Consultant" class="form-control form-control-lg" asp-items="ViewBag?.ScopePackages"></select>
+                <span asp-validation-for="Consultant" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3 col-md-6">
+                <label asp-for="Accountable" class="control-label font-weight-bold">Accountable</label>
+                <select asp-for="Accountable" class="form-control form-control-lg" asp-items="ViewBag?.ScopePackages"></select>
+                <span asp-validation-for="Accountable" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3 col-md-6">
+                <label asp-for="Informed" class="control-label font-weight-bold">Informed</label>
+                <select asp-for="Informed" class="form-control form-control-lg" asp-items="ViewBag?.ScopePackages"></select>
+                <span asp-validation-for="Informed" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3 col-md-6">
+                <label asp-for="Supported" class="control-label font-weight-bold">Supported</label>
+                <select asp-for="Supported" class="form-control form-control-lg" asp-items="ViewBag?.ScopePackages"></select>
+                <span asp-validation-for="Supported" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

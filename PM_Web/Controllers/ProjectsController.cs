@@ -1,29 +1,32 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PM01.Data;
-using PM01.Models;
-using PM01.Models.ViewModels;
+using PM.Data;
+using PM.Models;
+using PM.Models.ViewModels;
 using System.Security.Claims;
 
-namespace PM01.Controllers
+namespace PM.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Cordinator")]
     public class ProjectsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public ProjectsController(ApplicationDbContext context)
+        public ProjectsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
+            _userManager = userManager;
             _context = context;
         }
 
         // GET: Projects
-        
+
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var projects = await _context.Projects.Where(m=>m.OwnerId==userId).ToListAsync();
+            var projects = await _context.Projects.Where(m => m.OwnerId == userId).ToListAsync();
             return View(projects);
         }
 
@@ -62,7 +65,7 @@ namespace PM01.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ProjectName,Location,Owners,ProjectNature,ProjectType,ScopePackages,JVPartners,ProjectValue,ProjectStage,DeliveryStrategies,ContractingStrategies,BOQs,Activities")] ProjectViewModel viewModel)
+        public async Task<IActionResult> Create([Bind("Id,ProjectName,Location,Owners,ProjectNature,ProjectType,ScopePackages,JVPartners,ProjectValue,ProjectStage,DeliveryStrategies,ContractingStrategies,BOQs,Activities,TeamMembers,TeamManager")] ProjectViewModel viewModel)
         {
             var ownerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var project = new Project
@@ -80,8 +83,93 @@ namespace PM01.Controllers
                 ScopePackages = viewModel.ScopePackages,
                 BOQs = viewModel.BOQs,
                 Activities = viewModel.Activities,
-                OwnerId = ownerId
+                OwnerId = ownerId,
+                TeamManager = viewModel.TeamManager.Email,
+                TeamMembers = viewModel.TeamMembers.Select(s => s.Email).ToList()
             };
+            foreach (var teamMember in viewModel.TeamMembers)
+            {
+                var userTeamMember = new ApplicationUser
+                {
+                    FullName = teamMember.Name,
+                    UserName = teamMember.Email,
+                    Email = teamMember.Email
+                };
+                var resultOfCreate = await _userManager.CreateAsync(userTeamMember, teamMember.Password);
+                if (resultOfCreate.Succeeded)
+                {
+                    var resultRole = await _userManager.AddToRoleAsync(userTeamMember, "TeamMember");
+                    if (!resultRole.Succeeded)
+                    {
+                        var resultDelete = await _userManager.DeleteAsync(userTeamMember);
+                        if (resultDelete.Succeeded)
+                        {
+                            ModelState.AddModelError(string.Empty, "Failed to create user");
+                        }
+                        else
+                        {
+                            foreach (var error in resultDelete.Errors)
+                            {
+                                ModelState.AddModelError(string.Empty, error.Description);
+                            }
+                        }
+                        foreach (var error in resultRole.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                        return View(viewModel);
+                    }
+                }
+                else
+                {
+                    foreach (var error in resultOfCreate.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                    return View(viewModel);
+                }
+
+            }
+            var userTeamManager = new ApplicationUser
+            {
+                FullName = viewModel.TeamManager.Name,
+                Email = viewModel.TeamManager.Email,
+                UserName = viewModel.TeamManager.Email
+            };
+            var resultCreate = await _userManager.CreateAsync(userTeamManager, viewModel.TeamManager.Password);
+            if (resultCreate.Succeeded)
+            {
+                var resultRole = await _userManager.AddToRoleAsync(userTeamManager, "TeamManager");
+                if (!resultRole.Succeeded)
+                {
+                    var resultDelete = await _userManager.DeleteAsync(userTeamManager);
+                    if (resultDelete.Succeeded)
+                    {
+                        ModelState.AddModelError(string.Empty, "Failed to create user");
+                    }
+                    else
+                    {
+                        foreach (var error in resultDelete.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                    }
+                    foreach (var error in resultRole.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                    return View(viewModel);
+                }
+            }
+            else
+            {
+                foreach (var error in resultCreate.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return View(viewModel);
+            }
+
 
             _context.Add(project);
             await _context.SaveChangesAsync();
@@ -97,10 +185,10 @@ namespace PM01.Controllers
             }
 
             var project = await _context.Projects
-                .Include(inc=>inc.Owners)
-                .Include(inc=>inc.Activities)
-                .Include(inc=>inc.BOQs)
-                .Include(inc=>inc.ScopePackages)
+                .Include(inc => inc.Owners)
+                .Include(inc => inc.Activities)
+                .Include(inc => inc.BOQs)
+                .Include(inc => inc.ScopePackages)
                 .FirstOrDefaultAsync(p => p.Id == id);
             if (project == null)
             {
@@ -117,7 +205,7 @@ namespace PM01.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,ProjectName,Location,Owners,ProjectNature,ProjectType,ScopePackages,JVPartners,ProjectValue,ProjectStage,DeliveryStrategies,ContractingStrategies,BOQs,Activities")] ProjectViewModel viewModel, string removedItems)
         {
-            
+
             if (id != viewModel.Id)
             {
                 return NotFound();
@@ -153,7 +241,7 @@ namespace PM01.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 return NotFound();
-                
+
             }
             return RedirectToAction(nameof(Index));
         }

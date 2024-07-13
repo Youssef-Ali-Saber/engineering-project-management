@@ -1,4 +1,4 @@
-namespace PM01.Models
+namespace PM.Models
 {
     public class ErrorViewModel
     {

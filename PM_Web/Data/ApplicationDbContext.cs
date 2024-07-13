@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using PM01.Models;
+using PM.Models;
 
-namespace PM01.Data
+namespace PM.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser,IdentityRole,string>
     {
@@ -13,8 +13,7 @@ namespace PM01.Data
         }
         public DbSet<ApplicationUser> Users { get; set; }
         public DbSet<Project> Projects { get; set; }
-        public DbSet<BOQ> BOQs { get; set; }
-        public DbSet<Activity> Activities { get; set; }
+        public DbSet<InterfacePoint> InterfacePoints { get; set; }
 
         override protected void OnModelCreating(ModelBuilder builder)
         {
@@ -33,6 +32,13 @@ namespace PM01.Data
                     Id = Guid.NewGuid().ToString(),
                     Name = "TeamMember",
                     NormalizedName = "TEAMMEMBER",
+                    ConcurrencyStamp = Guid.NewGuid().ToString()
+                },
+                new IdentityRole
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = "TeamManager",
+                    NormalizedName = "TEAMMANAGER",
                     ConcurrencyStamp = Guid.NewGuid().ToString()
                 });
         }

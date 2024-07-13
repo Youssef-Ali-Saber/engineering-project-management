@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using PM01.Data;
-using PM01.Models;
+using PM.Data;
+using PM.Models;
 
-namespace PM01
+namespace PM
 {
     public class Program
     {

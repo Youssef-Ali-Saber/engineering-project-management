@@ -3,11 +3,11 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using PM01.Data;
+using PM.Data;
 
 #nullable disable
 
-namespace PM01.Migrations
+namespace PM.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -45,17 +45,24 @@ namespace PM01.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "da70b56d-2aec-4d04-9c73-6988cdc6c413",
-                            ConcurrencyStamp = "4f2b08e1-98dd-489c-bec0-6a247ceb92de",
+                            Id = "3415a636-2c20-4e8b-b684-983e53330f81",
+                            ConcurrencyStamp = "c50ee15c-6146-467b-9ab2-eebe3ecccc72",
                             Name = "Cordinator",
                             NormalizedName = "CORDINATOR"
                         },
                         new
                         {
-                            Id = "775899cf-c090-4e8f-af2a-e4373cb4e652",
-                            ConcurrencyStamp = "09527e9f-f7b7-4897-9af7-ef869e85af30",
+                            Id = "ed890c0a-6347-457d-9d1a-95d363ffd463",
+                            ConcurrencyStamp = "250f1283-4624-450c-a55f-55f902d096fc",
                             Name = "TeamMember",
                             NormalizedName = "TEAMMEMBER"
+                        },
+                        new
+                        {
+                            Id = "3cba358d-7be4-48dc-9c1a-ade43e069450",
+                            ConcurrencyStamp = "14ea58d4-aaa6-4374-b2da-718a09bdcf19",
+                            Name = "TeamManager",
+                            NormalizedName = "TEAMMANAGER"
                         });
                 });
 
@@ -161,7 +168,33 @@ namespace PM01.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("PM01.Models.ApplicationUser", b =>
+            modelBuilder.Entity("PM.Models.Activity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ProjectID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectID");
+
+                    b.ToTable("Activity");
+                });
+
+            modelBuilder.Entity("PM.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
@@ -199,7 +232,6 @@ namespace PM01.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Organization")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PasswordHash")
@@ -215,7 +247,6 @@ namespace PM01.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("TwoFactorEnabled")
@@ -237,33 +268,7 @@ namespace PM01.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Project_Management.Models.Activity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("ProjectID")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjectID");
-
-                    b.ToTable("Activities");
-                });
-
-            modelBuilder.Entity("Project_Management.Models.BOQ", b =>
+            modelBuilder.Entity("PM.Models.BOQ", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -286,10 +291,141 @@ namespace PM01.Migrations
 
                     b.HasIndex("ProjectID");
 
-                    b.ToTable("BOQs");
+                    b.ToTable("BOQ");
                 });
 
-            modelBuilder.Entity("Project_Management.Models.Owner", b =>
+            modelBuilder.Entity("PM.Models.Chat", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("InterfacePointId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Sender")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Time")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InterfacePointId");
+
+                    b.ToTable("Chat");
+                });
+
+            modelBuilder.Entity("PM.Models.Documentation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("DocumentationDescription")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DocumentationLink")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("InterfacePointId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InterfacePointId");
+
+                    b.ToTable("Documentation");
+                });
+
+            modelBuilder.Entity("PM.Models.InterfacePoint", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Accountable")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("ActivityId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("BOQId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("CloseDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Consultant")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ExtraSystem")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Informed")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("IssueDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Nature")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Responsible")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Scope")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ScopePackage1")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ScopePackage2")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Supported")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("System1")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("System2")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityId");
+
+                    b.HasIndex("BOQId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("InterfacePoints");
+                });
+
+            modelBuilder.Entity("PM.Models.Owner", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -309,7 +445,7 @@ namespace PM01.Migrations
                     b.ToTable("Owner");
                 });
 
-            modelBuilder.Entity("Project_Management.Models.Project", b =>
+            modelBuilder.Entity("PM.Models.Project", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -353,6 +489,14 @@ namespace PM01.Migrations
                     b.Property<decimal>("ProjectValue")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("TeamManager")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TeamMembers")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.HasIndex("OwnerId");
@@ -360,7 +504,7 @@ namespace PM01.Migrations
                     b.ToTable("Projects");
                 });
 
-            modelBuilder.Entity("Project_Management.Models.ScopePackage", b =>
+            modelBuilder.Entity("PM.Models.ScopePackage", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -391,7 +535,7 @@ namespace PM01.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("PM01.Models.ApplicationUser", null)
+                    b.HasOne("PM.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -400,7 +544,7 @@ namespace PM01.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("PM01.Models.ApplicationUser", null)
+                    b.HasOne("PM.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -415,7 +559,7 @@ namespace PM01.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PM01.Models.ApplicationUser", null)
+                    b.HasOne("PM.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -424,43 +568,84 @@ namespace PM01.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("PM01.Models.ApplicationUser", null)
+                    b.HasOne("PM.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Project_Management.Models.Activity", b =>
+            modelBuilder.Entity("PM.Models.Activity", b =>
                 {
-                    b.HasOne("Project_Management.Models.Project", null)
+                    b.HasOne("PM.Models.Project", null)
                         .WithMany("Activities")
                         .HasForeignKey("ProjectID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Project_Management.Models.BOQ", b =>
+            modelBuilder.Entity("PM.Models.BOQ", b =>
                 {
-                    b.HasOne("Project_Management.Models.Project", null)
+                    b.HasOne("PM.Models.Project", null)
                         .WithMany("BOQs")
                         .HasForeignKey("ProjectID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Project_Management.Models.Owner", b =>
+            modelBuilder.Entity("PM.Models.Chat", b =>
                 {
-                    b.HasOne("Project_Management.Models.Project", null)
+                    b.HasOne("PM.Models.InterfacePoint", null)
+                        .WithMany("chat")
+                        .HasForeignKey("InterfacePointId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PM.Models.Documentation", b =>
+                {
+                    b.HasOne("PM.Models.InterfacePoint", null)
+                        .WithMany("Documentations")
+                        .HasForeignKey("InterfacePointId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PM.Models.InterfacePoint", b =>
+                {
+                    b.HasOne("PM.Models.Activity", "Activity")
+                        .WithMany()
+                        .HasForeignKey("ActivityId");
+
+                    b.HasOne("PM.Models.BOQ", "BOQ")
+                        .WithMany()
+                        .HasForeignKey("BOQId");
+
+                    b.HasOne("PM.Models.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Activity");
+
+                    b.Navigation("BOQ");
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("PM.Models.Owner", b =>
+                {
+                    b.HasOne("PM.Models.Project", null)
                         .WithMany("Owners")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Project_Management.Models.Project", b =>
+            modelBuilder.Entity("PM.Models.Project", b =>
                 {
-                    b.HasOne("PM01.Models.ApplicationUser", "Owner")
+                    b.HasOne("PM.Models.ApplicationUser", "Owner")
                         .WithMany()
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -469,16 +654,23 @@ namespace PM01.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("Project_Management.Models.ScopePackage", b =>
+            modelBuilder.Entity("PM.Models.ScopePackage", b =>
                 {
-                    b.HasOne("Project_Management.Models.Project", null)
+                    b.HasOne("PM.Models.Project", null)
                         .WithMany("ScopePackages")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Project_Management.Models.Project", b =>
+            modelBuilder.Entity("PM.Models.InterfacePoint", b =>
+                {
+                    b.Navigation("Documentations");
+
+                    b.Navigation("chat");
+                });
+
+            modelBuilder.Entity("PM.Models.Project", b =>
                 {
                     b.Navigation("Activities");
 

@@ -1,4 +1,4 @@
-﻿namespace PM01.Models;
+﻿namespace PM.Models;
 
 public class Project
 {
@@ -18,7 +18,10 @@ public class Project
     public List<Activity> Activities { get; set; }
     public string OwnerId { get; set; }
     public ApplicationUser Owner { get; set; }
+    public List<string> TeamMembers { get; set; }
+    public string TeamManager { get; set; }
 }
+
 
 public class ScopePackage
 {

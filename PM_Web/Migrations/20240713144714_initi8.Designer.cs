@@ -11,8 +11,8 @@ using PM.Data;
 namespace PM.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240712130331_initi5")]
-    partial class initi5
+    [Migration("20240713144714_initi8")]
+    partial class initi8
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,17 +48,24 @@ namespace PM.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "da70b56d-2aec-4d04-9c73-6988cdc6c413",
-                            ConcurrencyStamp = "4f2b08e1-98dd-489c-bec0-6a247ceb92de",
+                            Id = "7e747a20-cb51-4ea1-87ea-19ab6f0bb8bd",
+                            ConcurrencyStamp = "2ca2499c-4a76-4efd-b47e-a51a87fc1188",
                             Name = "Cordinator",
                             NormalizedName = "CORDINATOR"
                         },
                         new
                         {
-                            Id = "775899cf-c090-4e8f-af2a-e4373cb4e652",
-                            ConcurrencyStamp = "09527e9f-f7b7-4897-9af7-ef869e85af30",
+                            Id = "bc1ca5e0-a673-4860-a898-667bf27dcdc6",
+                            ConcurrencyStamp = "2b7e493a-9b84-4567-8bba-d6c7a99e7c10",
                             Name = "TeamMember",
                             NormalizedName = "TEAMMEMBER"
+                        },
+                        new
+                        {
+                            Id = "4523f160-034d-4df2-924d-095ec0493ee2",
+                            ConcurrencyStamp = "03f74990-6438-4f1f-a616-faf21ebff9bd",
+                            Name = "TeamManager",
+                            NormalizedName = "TEAMMANAGER"
                         });
                 });
 
@@ -164,6 +171,32 @@ namespace PM.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("PM.Models.Activity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ProjectID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectID");
+
+                    b.ToTable("Activities");
+                });
+
             modelBuilder.Entity("PM.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -202,7 +235,6 @@ namespace PM.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Organization")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PasswordHash")
@@ -218,7 +250,6 @@ namespace PM.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("TwoFactorEnabled")
@@ -240,33 +271,7 @@ namespace PM.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Project_Management.Models.Activity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("ProjectID")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjectID");
-
-                    b.ToTable("Activities");
-                });
-
-            modelBuilder.Entity("Project_Management.Models.BOQ", b =>
+            modelBuilder.Entity("PM.Models.BOQ", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -292,7 +297,7 @@ namespace PM.Migrations
                     b.ToTable("BOQs");
                 });
 
-            modelBuilder.Entity("Project_Management.Models.Owner", b =>
+            modelBuilder.Entity("PM.Models.Owner", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -312,7 +317,7 @@ namespace PM.Migrations
                     b.ToTable("Owner");
                 });
 
-            modelBuilder.Entity("Project_Management.Models.Project", b =>
+            modelBuilder.Entity("PM.Models.Project", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -356,6 +361,14 @@ namespace PM.Migrations
                     b.Property<decimal>("ProjectValue")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("TeamManager")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TeamMembers")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.HasIndex("OwnerId");
@@ -363,7 +376,7 @@ namespace PM.Migrations
                     b.ToTable("Projects");
                 });
 
-            modelBuilder.Entity("Project_Management.Models.ScopePackage", b =>
+            modelBuilder.Entity("PM.Models.ScopePackage", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -434,34 +447,34 @@ namespace PM.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Project_Management.Models.Activity", b =>
+            modelBuilder.Entity("PM.Models.Activity", b =>
                 {
-                    b.HasOne("Project_Management.Models.Project", null)
+                    b.HasOne("PM.Models.Project", null)
                         .WithMany("Activities")
                         .HasForeignKey("ProjectID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Project_Management.Models.BOQ", b =>
+            modelBuilder.Entity("PM.Models.BOQ", b =>
                 {
-                    b.HasOne("Project_Management.Models.Project", null)
+                    b.HasOne("PM.Models.Project", null)
                         .WithMany("BOQs")
                         .HasForeignKey("ProjectID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Project_Management.Models.Owner", b =>
+            modelBuilder.Entity("PM.Models.Owner", b =>
                 {
-                    b.HasOne("Project_Management.Models.Project", null)
+                    b.HasOne("PM.Models.Project", null)
                         .WithMany("Owners")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Project_Management.Models.Project", b =>
+            modelBuilder.Entity("PM.Models.Project", b =>
                 {
                     b.HasOne("PM.Models.ApplicationUser", "Owner")
                         .WithMany()
@@ -472,16 +485,16 @@ namespace PM.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("Project_Management.Models.ScopePackage", b =>
+            modelBuilder.Entity("PM.Models.ScopePackage", b =>
                 {
-                    b.HasOne("Project_Management.Models.Project", null)
+                    b.HasOne("PM.Models.Project", null)
                         .WithMany("ScopePackages")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Project_Management.Models.Project", b =>
+            modelBuilder.Entity("PM.Models.Project", b =>
                 {
                     b.Navigation("Activities");
 

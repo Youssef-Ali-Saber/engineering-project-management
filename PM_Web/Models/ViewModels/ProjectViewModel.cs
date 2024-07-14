@@ -41,6 +41,7 @@ namespace PM.Models.ViewModels
         public List<BOQ> BOQs { get; set; } = new List<BOQ>();
 
         public List<Activity> Activities { get; set; } = new List<Activity>();
+        public List<_System> Systems { get; set; } = new List<_System>();
         public List<TeamMember> TeamMembers { get; set; }
         public TeamMember TeamManager { get; set; }
     }

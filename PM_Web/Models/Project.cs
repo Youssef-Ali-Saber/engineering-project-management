@@ -16,12 +16,19 @@ public class Project
     public string ContractingStrategies { get; set; }
     public List<BOQ> BOQs { get; set; }
     public List<Activity> Activities { get; set; }
+    public List<_System> Systems { get; set; }
     public string OwnerId { get; set; }
     public ApplicationUser Owner { get; set; }
     public List<string> TeamMembers { get; set; }
     public string TeamManager { get; set; }
 }
 
+public class _System
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int ProjectId { get; set; }
+}
 
 public class ScopePackage
 {

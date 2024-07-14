@@ -2,8 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using PM.Data;
 using PM.Models;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace PM.Controllers
 {

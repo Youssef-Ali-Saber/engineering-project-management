@@ -126,6 +126,19 @@
                         </div>
                         <hr />
                         <div class="form-group mb-3">
+                            <label class="control-label font-weight-bold">Systems</label>
+                            <table class="table table-bordered">
+                                <tbody id="systemsTable">
+                                    <tr>
+                                        <td><input name="Systems[0].Name" class="form-control form-control-lg" placeholder="Enter name" /></td>
+                                        <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-primary" onclick="addSystemRow()">Add System</button>
+                        </div>
+                        <hr />
+                        <div class="form-group mb-3">
                             <label class="control-label font-weight-bold">Team Manager</label>
                             <div class="mb-3">
                                 <input name="TeamManager.Name" class="form-control form-control-lg" placeholder="Enter manager name" />
@@ -202,6 +215,25 @@
             element1.name = "ScopePackages[" + rowCount + "].Name";
             element1.className = "form-control";
             element1.placeholder = "Enter scope package name";
+            cell1.appendChild(element1);
+            var cell2 = row.insertCell(1);
+            var button = document.createElement("button");
+            button.type = "button";
+            button.className = "btn btn-danger";
+            button.onclick = function () { removeRow(this) };
+            button.innerHTML = "Remove";
+            cell2.appendChild(button);
+        }
+        function addSystemRow() {
+            var table = document.getElementById("systemsTable");
+            var rowCount = table.rows.length;
+            var row = table.insertRow(rowCount);
+            var cell1 = row.insertCell(0);
+            var element1 = document.createElement("input");
+            element1.type = "text";
+            element1.name = "Systems[" + rowCount + "].Name";
+            element1.className = "form-control";
+            element1.placeholder = "Enter name";
             cell1.appendChild(element1);
             var cell2 = row.insertCell(1);
             var button = document.createElement("button");

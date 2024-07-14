@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -66,11 +62,12 @@ namespace PM.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _context.Users.FirstOrDefault(u => u.Id == userId);
-            var project = _context.Projects.Include(inc => inc.ScopePackages).FirstOrDefault(m => m.TeamMembers.Any(tm => tm == user.Email));
+            var project = _context.Projects.Include(inc => inc.ScopePackages).Include(i=>i.Systems).FirstOrDefault(m => m.TeamMembers.Any(tm => tm == user.Email));
 
             if (project != null && project.ScopePackages != null)
             {
                 ViewBag.ScopePackages = new SelectList(project.ScopePackages.Select(sp => sp.Name).ToList());
+                ViewBag.Systems = new SelectList(project.Systems.Select(sp => sp.Name).ToList());
                 return View();
             }
             return View();
@@ -86,18 +83,22 @@ namespace PM.Controllers
             var user = _context.Users.FirstOrDefault(u => u.Id == userId);
             var project = _context.Projects.Include(inc => inc.ScopePackages).FirstOrDefault(m => m.TeamMembers.Any(tm => tm == user.Email));
 
-            foreach (var documentation in viewModel.Documentations)
+            if(viewModel.Documentations != null)
             {
-                if (documentation.DocumentationFile != null)
+                foreach (var documentation in viewModel.Documentations)
                 {
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", documentation.DocumentationFile.FileName);
-                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    if (documentation.DocumentationFile != null)
                     {
-                        await documentation.DocumentationFile.CopyToAsync(stream);
+                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", documentation.DocumentationFile.FileName);
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await documentation.DocumentationFile.CopyToAsync(stream);
+                        }
+                        documentation.DocumentationLink = $"/uploads/{documentation.DocumentationFile.FileName}";
                     }
-                    documentation.DocumentationLink = $"/uploads/{documentation.DocumentationFile.FileName}";
                 }
             }
+            
 
             var interfacePoint = new InterfacePoint
             {
@@ -141,12 +142,12 @@ namespace PM.Controllers
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _context.Users.FirstOrDefault(u => u.Id == userId);
-            var project = _context.Projects.Include(inc => inc.ScopePackages).FirstOrDefault(m => m.TeamMembers.Any(tm => tm == user.Email));
+            var project = _context.Projects.Include(inc => inc.ScopePackages).Include(i => i.Systems).FirstOrDefault(m => m.TeamMembers.Any(tm => tm == user.Email));
 
             if (project != null && project.ScopePackages != null)
             {
                 ViewBag.ScopePackages = new SelectList(project.ScopePackages.Select(sp => sp.Name).ToList());
-
+                ViewBag.Systems = new SelectList(project.Systems.Select(sp => sp.Name).ToList());
                 return View(interfacePoint);
             }
 

@@ -65,7 +65,7 @@ namespace PM.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ProjectName,Location,Owners,ProjectNature,ProjectType,ScopePackages,JVPartners,ProjectValue,ProjectStage,DeliveryStrategies,ContractingStrategies,BOQs,Activities,TeamMembers,TeamManager")] ProjectViewModel viewModel)
+        public async Task<IActionResult> Create([Bind("Id,ProjectName,Location,Owners,ProjectNature,ProjectType,ScopePackages,JVPartners,ProjectValue,ProjectStage,DeliveryStrategies,ContractingStrategies,BOQs,Activities,Systems,TeamMembers,TeamManager")] ProjectViewModel viewModel)
         {
             var ownerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var project = new Project
@@ -83,9 +83,11 @@ namespace PM.Controllers
                 ScopePackages = viewModel.ScopePackages,
                 BOQs = viewModel.BOQs,
                 Activities = viewModel.Activities,
+                Systems = viewModel.Systems,
                 OwnerId = ownerId,
                 TeamManager = viewModel.TeamManager.Email,
                 TeamMembers = viewModel.TeamMembers.Select(s => s.Email).ToList()
+
             };
             foreach (var teamMember in viewModel.TeamMembers)
             {

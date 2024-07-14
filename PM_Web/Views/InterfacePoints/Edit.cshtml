@@ -39,26 +39,26 @@
                             </div>
 
                             <div class="form-group mb-3" id="ScopePackage1Container">
-                                <label asp-for="ScopePackage1" class="form-label">Scope Package 1</label>
-                                <input asp-for="ScopePackage1" class="form-control form-control-lg" />
+                                <label asp-for="ScopePackage1" class="control-label font-weight-bold">Scope Package 1</label>
+                                <select asp-for="ScopePackage1" class="form-control form-control-lg" asp-items="ViewBag?.ScopePackages"></select>
                                 <span asp-validation-for="ScopePackage1" class="text-danger"></span>
                             </div>
 
                             <div class="form-group mb-3" id="ScopePackage2Container">
-                                <label asp-for="ScopePackage2" class="form-label">Scope Package 2</label>
-                                <input asp-for="ScopePackage2" class="form-control form-control-lg" />
+                                <label asp-for="ScopePackage2" class="control-label font-weight-bold">Scope Package 2</label>
+                                <select asp-for="ScopePackage2" class="form-control form-control-lg" asp-items="ViewBag?.ScopePackages"></select>
                                 <span asp-validation-for="ScopePackage2" class="text-danger"></span>
                             </div>
 
                             <div class="form-group mb-3" id="System1Container">
-                                <label asp-for="System1" class="form-label">System 1</label>
-                                <input asp-for="System1" class="form-control form-control-lg" />
+                                <label asp-for="System1" class="control-label font-weight-bold">System 1</label>
+                                <select asp-for="System1" class="form-control form-control-lg" asp-items="ViewBag?.Systems"></select>
                                 <span asp-validation-for="System1" class="text-danger"></span>
                             </div>
 
                             <div class="form-group mb-3" id="System2Container">
-                                <label asp-for="System2" class="form-label">System 2</label>
-                                <input asp-for="System2" class="form-control form-control-lg" />
+                                <label asp-for="System2" class="control-label font-weight-bold">System 2</label>
+                                <select asp-for="System2" class="form-control form-control-lg" asp-items="ViewBag?.Systems"></select>
                                 <span asp-validation-for="System2" class="text-danger"></span>
                             </div>
 

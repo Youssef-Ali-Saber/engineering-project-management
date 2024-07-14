@@ -26,8 +26,19 @@ namespace PM.Controllers
         // GET: InterfacePoints
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.InterfacePoints.Include(i => i.Project);
-            return View(await applicationDbContext.ToListAsync());
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _context.Users.FindAsync(userId);
+            var interfacePoints = _context.InterfacePoints;
+            if (User.IsInRole("Cordinator"))
+                return View(await interfacePoints.Include(i => i.Project).Where(m => m.Status == "Pending" && m.Status == "Approved" && m.Project.OwnerId == userId).ToListAsync());
+            
+            else if(User.IsInRole("TeamManager")|| User.IsInRole("TeamMember"))
+            {
+                var project = _context.Projects.FirstOrDefault(m => m.TeamMembers.Any(tm => tm == user.Email)||m.TeamManager ==user.Email);
+                return View(await interfacePoints.Where(m => m.ProjectId == project.Id).ToListAsync());
+            }
+            else
+                return View(interfacePoints);
         }
 
         // GET: InterfacePoints/Details/5
@@ -50,11 +61,12 @@ namespace PM.Controllers
         }
 
         // GET: InterfacePoints/Create
+        [Authorize(Roles = "TeamMember")]
         public IActionResult Create()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _context.Users.FirstOrDefault(u => u.Id == userId);
-            var project = _context.Projects.FirstOrDefault(m => m.TeamMembers.Any(tm => tm == user.Email));
+            var project = _context.Projects.Include(inc => inc.ScopePackages).FirstOrDefault(m => m.TeamMembers.Any(tm => tm == user.Email));
 
             if (project != null && project.ScopePackages != null)
             {
@@ -64,56 +76,55 @@ namespace PM.Controllers
             return View();
         }
 
-
         // POST: InterfacePoints/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Nature,Scope,ScopePackage1,ScopePackage2,System1,System2,ExtraSystem,Category,Responsible,Consultant,Accountable,Informed,Supported,Documentations,ProjectId")] InterFacePointViewModel ViewModel)
+        [Authorize(Roles = "TeamMember")]
+        public async Task<IActionResult> Create([Bind("Nature,Scope,ScopePackage1,ScopePackage2,System1,System2,ExtraSystem,Category,Responsible,Consultant,Accountable,Informed,Supported,Documentations,ProjectId")] InterFacePointViewModel viewModel)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _context.Users.FirstOrDefault(u => u.Id == userId);
-            var project = _context.Projects.FirstOrDefault(m => m.TeamMembers.Any(tm => tm == user.Email));
-            foreach (var documentation in ViewModel.Documentations)
+            var project = _context.Projects.Include(inc => inc.ScopePackages).FirstOrDefault(m => m.TeamMembers.Any(tm => tm == user.Email));
+
+            foreach (var documentation in viewModel.Documentations)
+            {
+                if (documentation.DocumentationFile != null)
                 {
-                    if (documentation.DocumentationFile != null)
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", documentation.DocumentationFile.FileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
                     {
-                        // Save the file and set the DocumentationLink to the saved file path
-                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", documentation.DocumentationFile.FileName);
-                        using (var stream = new FileStream(filePath, FileMode.Create))
-                        {
-                            await documentation.DocumentationFile.CopyToAsync(stream);
-                        }
-                        documentation.DocumentationLink = $"/uploads/{documentation.DocumentationFile.FileName}";
+                        await documentation.DocumentationFile.CopyToAsync(stream);
                     }
+                    documentation.DocumentationLink = $"/uploads/{documentation.DocumentationFile.FileName}";
                 }
+            }
+
             var interfacePoint = new InterfacePoint
             {
-                Nature = ViewModel.Nature,
-                Scope = ViewModel.Scope,
-                ScopePackage1 = ViewModel.ScopePackage1,
-                ScopePackage2 = ViewModel.ScopePackage2,
-                System1 = ViewModel.System1,
-                System2 = ViewModel.System2,
-                ExtraSystem = ViewModel.ExtraSystem,
-                Category = ViewModel.Category,
-                Responsible = ViewModel.Responsible,
-                Consultant = ViewModel.Consultant,
-                Accountable = ViewModel.Accountable,
-                Informed = ViewModel.Informed,
-                Supported = ViewModel.Supported,
-                Status = ViewModel.Status,
+                Nature = viewModel.Nature,
+                Scope = viewModel.Scope,
+                ScopePackage1 = viewModel.ScopePackage1,
+                ScopePackage2 = viewModel.ScopePackage2,
+                System1 = viewModel.System1,
+                System2 = viewModel.System2,
+                ExtraSystem = viewModel.ExtraSystem,
+                Category = viewModel.Category,
+                Responsible = viewModel.Responsible,
+                Consultant = viewModel.Consultant,
+                Accountable = viewModel.Accountable,
+                Informed = viewModel.Informed,
+                Supported = viewModel.Supported,
+                Status = viewModel.Status,
                 CreatDate = DateTime.Now,
-                Documentations = ViewModel.Documentations,
+                Documentations = viewModel.Documentations,
                 ProjectId = project.Id,
             };
+
             _context.Add(interfacePoint);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: InterfacePoints/Edit/5
         // GET: InterfacePoints/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -130,82 +141,69 @@ namespace PM.Controllers
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _context.Users.FirstOrDefault(u => u.Id == userId);
-            var project = _context.Projects.FirstOrDefault(m => m.TeamMembers.Any(tm => tm == user.Email));
+            var project = _context.Projects.Include(inc => inc.ScopePackages).FirstOrDefault(m => m.TeamMembers.Any(tm => tm == user.Email));
 
             if (project != null && project.ScopePackages != null)
             {
                 ViewBag.ScopePackages = new SelectList(project.ScopePackages.Select(sp => sp.Name).ToList());
+
+                return View(interfacePoint);
             }
 
             return View(interfacePoint);
         }
 
-
-        // POST: InterfacePoints/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         // POST: InterfacePoints/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, InterfacePoint InterfacePoint)
+        public async Task<IActionResult> Edit(int id, InterfacePoint interfacePoint)
         {
-            if (id != InterfacePoint.Id)
+            if (id != interfacePoint.Id)
             {
                 return NotFound();
             }
-
-            if (ModelState.IsValid)
+            try
             {
-                try
+                var userId0 = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user0 = _context.Users.FirstOrDefault(u => u.Id == userId0);
+                var project0 = _context.Projects.FirstOrDefault(m => m.TeamMembers.Any(tm => tm == user0.Email));
+
+                interfacePoint.ProjectId = project0.Id;
+
+                foreach (var documentation in interfacePoint.Documentations)
                 {
-                    var userId0 = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                    var user0 = _context.Users.FirstOrDefault(u => u.Id == userId0);
-                    var project0 = _context.Projects.FirstOrDefault(m => m.TeamMembers.Any(tm => tm == user0.Email));
-
-                    InterfacePoint.ProjectId = project0.Id;
-
-                    foreach (var documentation in InterfacePoint.Documentations)
+                    if (documentation.DocumentationFile != null)
                     {
-                        if (documentation.DocumentationFile != null)
+                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", documentation.DocumentationFile.FileName);
+                        using (var stream = new FileStream(filePath, FileMode.Create))
                         {
-                            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", documentation.DocumentationFile.FileName);
-                            using (var stream = new FileStream(filePath, FileMode.Create))
-                            {
-                                await documentation.DocumentationFile.CopyToAsync(stream);
-                            }
-                            documentation.DocumentationLink = $"/uploads/{documentation.DocumentationFile.FileName}";
+                            await documentation.DocumentationFile.CopyToAsync(stream);
                         }
+                        documentation.DocumentationLink = $"/uploads/{documentation.DocumentationFile.FileName}";
                     }
+                }
 
-                    _context.Update(InterfacePoint);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!InterfacePointExists(InterfacePoint.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                _context.Update(interfacePoint);
+                await _context.SaveChangesAsync();
             }
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
-            var project = _context.Projects.FirstOrDefault(m => m.TeamMembers.Any(tm => tm == user.Email));
-
-            if (project != null && project.ScopePackages != null)
+            catch (DbUpdateConcurrencyException)
             {
-                ViewBag.ScopePackages = new SelectList(project.ScopePackages.Select(sp => sp.Name).ToList());
+                if (!InterfacePointExists(interfacePoint.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
             }
-            return View(InterfacePoint);
+            return RedirectToAction(nameof(Index));
+
         }
 
-
         // GET: InterfacePoints/Delete/5
+
+        [Authorize(Roles = "TeamMember,TeamManager")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -227,6 +225,7 @@ namespace PM.Controllers
         // POST: InterfacePoints/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "TeamMember,TeamManager")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var interfacePoint = await _context.InterfacePoints.FindAsync(id);
@@ -242,6 +241,40 @@ namespace PM.Controllers
         private bool InterfacePointExists(int id)
         {
             return _context.InterfacePoints.Any(e => e.Id == id);
+        }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> Issue(int id)
+        {
+            var interfacePoint = await _context.InterfacePoints.FindAsync(id);
+            if (interfacePoint == null)
+            {
+                return NotFound();
+            }
+
+            interfacePoint.IssueDate = DateTime.Now;
+            _context.Update(interfacePoint);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Edit), new { id });
+        }
+
+       
+
+        [HttpPost]
+        public async Task<IActionResult> ChangeStatus(int id, string status)
+        {
+            var interfacePoint = await _context.InterfacePoints.FindAsync(id);
+            if (interfacePoint == null)
+            {
+                return NotFound();
+            }
+
+            interfacePoint.Status = status;
+            _context.Update(interfacePoint);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Edit), new { id });
         }
     }
 }

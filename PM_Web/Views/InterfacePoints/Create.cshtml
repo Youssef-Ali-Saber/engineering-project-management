@@ -148,18 +148,26 @@
             const system2Container = document.getElementById('System2Container');
             const extraSystemContainer = document.getElementById('ExtraSystemContainer');
 
-            scopePackage1Container.style.display = 'block';
-            system1Container.style.display = 'block';
-            system2Container.style.display = 'block';
+            scopePackage1Container.style.display = 'none';
+            system1Container.style.display = 'none';
+            system2Container.style.display = 'none';
 
             scopePackage2Container.style.display = 'none';
             extraSystemContainer.style.display = 'none';
 
             if (scopeValue === 'Inter') {
                 scopePackage2Container.style.display = 'block';
+                scopePackage1Container.style.display = 'block';
+                system1Container.style.display = 'block';
+                system2Container.style.display = 'block';
             } else if (scopeValue === 'Exter') {
-                system2Container.style.display = 'none';
+                scopePackage1Container.style.display = 'block';
+                system1Container.style.display = 'block';
                 extraSystemContainer.style.display = 'block';
+            }else if (scopeValue === 'Intra') {
+                scopePackage1Container.style.display = 'block';
+                system1Container.style.display = 'block';
+                system2Container.style.display = 'block';
             }
         }
 

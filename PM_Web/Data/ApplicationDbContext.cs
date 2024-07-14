@@ -14,6 +14,7 @@ namespace PM.Data
         public DbSet<ApplicationUser> Users { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<InterfacePoint> InterfacePoints { get; set; }
+        public DbSet<Chat> Chats { get; set; }
 
         override protected void OnModelCreating(ModelBuilder builder)
         {

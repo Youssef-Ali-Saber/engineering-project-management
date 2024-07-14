@@ -1,0 +1,61 @@
+﻿@model IEnumerable<PM.Models.Chat>
+@{
+    ViewData["Title"] = "Chat";
+    var interfacePointId = ViewBag.InterfacePointId;
+}
+
+@if(Model is null)
+{
+    <h1 class="text-center mt-3">Chat for Interface Point @interfacePointId
+    </h1>
+}
+else
+{
+    <h1 class="text-center mt-3">Chat for Interface Point @interfacePointId</h1>
+
+    <div class="container mt-4">
+        <div class="row mb-3">
+            <div class="col">
+                <a asp-action="Details" asp-controller="InterfacePoints" asp-route-id="@interfacePointId" class="btn btn-secondary">Back to Details</a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <table class="table table-hover table-bordered text-center">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Time</th>
+                            <th>Sender</th>
+                            <th>Message</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var chat in Model)
+                        {
+                            <tr>
+                                <td>@chat.Time.ToString("g")</td>
+                                <td>@chat.Sender</td>
+                                <td>@chat.Message</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col">
+                <form asp-action="Create" method="post">
+                    <input type="hidden" name="interfacePointId" value="@interfacePointId" />
+                    <div class="form-group">
+                        <textarea name="message" class="form-control" placeholder="Type your message here..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+}
+

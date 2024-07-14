@@ -45,22 +45,22 @@ namespace PM.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "3415a636-2c20-4e8b-b684-983e53330f81",
-                            ConcurrencyStamp = "c50ee15c-6146-467b-9ab2-eebe3ecccc72",
+                            Id = "b91975a0-b36d-4142-a205-79122aed01f3",
+                            ConcurrencyStamp = "6bc966f2-9b45-4d4c-941d-837b549b95c5",
                             Name = "Cordinator",
                             NormalizedName = "CORDINATOR"
                         },
                         new
                         {
-                            Id = "ed890c0a-6347-457d-9d1a-95d363ffd463",
-                            ConcurrencyStamp = "250f1283-4624-450c-a55f-55f902d096fc",
+                            Id = "f7b86157-ccaf-4f04-9464-2ef6363ceda5",
+                            ConcurrencyStamp = "6fcb38b3-6ccf-4933-989d-702d6aaa554a",
                             Name = "TeamMember",
                             NormalizedName = "TEAMMEMBER"
                         },
                         new
                         {
-                            Id = "3cba358d-7be4-48dc-9c1a-ade43e069450",
-                            ConcurrencyStamp = "14ea58d4-aaa6-4374-b2da-718a09bdcf19",
+                            Id = "7edf9e8c-f8c0-47c1-9d65-d241241bd7b5",
+                            ConcurrencyStamp = "fa20c217-fd80-4f3f-a5a2-6be15c910ce3",
                             Name = "TeamManager",
                             NormalizedName = "TEAMMANAGER"
                         });
@@ -318,7 +318,7 @@ namespace PM.Migrations
 
                     b.HasIndex("InterfacePointId");
 
-                    b.ToTable("Chat");
+                    b.ToTable("Chats");
                 });
 
             modelBuilder.Entity("PM.Models.Documentation", b =>

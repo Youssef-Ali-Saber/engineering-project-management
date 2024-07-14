@@ -33,20 +33,19 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
+                        @if (User.IsInRole("Cordinator"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Projects" asp-action="Index">MyProjects</a>
+                            </li>
+                        }
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="InterfacePoints" asp-action="Index">Interface Points</a>
                             </li>
                         }
-                        @if (User.IsInRole("Cordinator"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Projects" asp-action="Index">MyProjects</a>
-                            </li>
-
-
-                        }
+                        
                     </ul>
 
                     <ul class="navbar-nav">

@@ -12,46 +12,10 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nature)
+            @Html.DisplayNameFor(model => model.Id)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nature)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Scope)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Scope)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ScopePackage1)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ScopePackage1)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ScopePackage2)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ScopePackage2)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.System1)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.System1)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.System2)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.System2)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ExtraSystem)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ExtraSystem)
+            @Html.DisplayFor(model => model.Id)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Category)
@@ -59,36 +23,7 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Category)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Responsible)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Responsible)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Consultant)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Consultant)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Accountable)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Accountable)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Informed)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Informed)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Supported)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Supported)
-        </dd>
+       
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Status)
         </dt>
@@ -114,22 +49,10 @@
             @Html.DisplayFor(model => model.CloseDate)
         </dd>
         <dt class = "col-sm-2">
-            Documentation Link
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Documentations.Select(s=>s.DocumentationLink).ToList())
-        </dd>
-        <dt class = "col-sm-2">
-            Documentation Description
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Documentations.Select(s => s.DocumentationDescription).ToList())
-        </dd>
-        <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Project)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Project.Id)
+            @Html.DisplayFor(model => model.Project.ProjectName)
         </dd>
     </dl>
     

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -175,9 +176,7 @@ namespace PM.Migrations
                     ProjectStage = table.Column<string>(type: "TEXT", nullable: false),
                     DeliveryStrategies = table.Column<string>(type: "TEXT", nullable: false),
                     ContractingStrategies = table.Column<string>(type: "TEXT", nullable: false),
-                    OwnerId = table.Column<string>(type: "TEXT", nullable: false),
-                    TeamMembers = table.Column<string>(type: "TEXT", nullable: false),
-                    TeamManager = table.Column<string>(type: "TEXT", nullable: false)
+                    OwnerId = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -191,83 +190,41 @@ namespace PM.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Activity",
+                name: "_System",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    ProjectID = table.Column<int>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    projectId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Activity", x => x.Id);
+                    table.PrimaryKey("PK__System", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Activity_Projects_ProjectID",
-                        column: x => x.ProjectID,
+                        name: "FK__System_Projects_projectId",
+                        column: x => x.projectId,
                         principalTable: "Projects",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "BOQ",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    ProjectID = table.Column<int>(type: "INTEGER", nullable: false),
-                    Quantity = table.Column<int>(type: "INTEGER", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    Cost = table.Column<decimal>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BOQ", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_BOQ_Projects_ProjectID",
-                        column: x => x.ProjectID,
-                        principalTable: "Projects",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Owner",
+                name: "Departments",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
+                    TeamManagerEmail = table.Column<string>(type: "TEXT", nullable: false),
+                    TeamMembersEmails = table.Column<string>(type: "TEXT", nullable: false),
                     ProjectId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Owner", x => x.Id);
+                    table.PrimaryKey("PK_Departments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Owner_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ScopePackage",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    ProjectId = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ScopePackage", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ScopePackage_Projects_ProjectId",
+                        name: "FK_Departments_Projects_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "Projects",
                         principalColumn: "Id",
@@ -288,8 +245,6 @@ namespace PM.Migrations
                     System2 = table.Column<string>(type: "TEXT", nullable: true),
                     ExtraSystem = table.Column<string>(type: "TEXT", nullable: true),
                     Category = table.Column<string>(type: "TEXT", nullable: false),
-                    BOQId = table.Column<int>(type: "INTEGER", nullable: true),
-                    ActivityId = table.Column<int>(type: "INTEGER", nullable: true),
                     Responsible = table.Column<string>(type: "TEXT", nullable: true),
                     Consultant = table.Column<string>(type: "TEXT", nullable: true),
                     Accountable = table.Column<string>(type: "TEXT", nullable: true),
@@ -299,23 +254,112 @@ namespace PM.Migrations
                     CreatDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     IssueDate = table.Column<DateTime>(type: "TEXT", nullable: true),
                     CloseDate = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    ProjectId = table.Column<int>(type: "INTEGER", nullable: false)
+                    ProjectId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_InterfacePoints", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_InterfacePoints_Activity_ActivityId",
-                        column: x => x.ActivityId,
-                        principalTable: "Activity",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_InterfacePoints_BOQ_BOQId",
-                        column: x => x.BOQId,
-                        principalTable: "BOQ",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_InterfacePoints_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Owner",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    projectId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Owner", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Owner_Projects_projectId",
+                        column: x => x.projectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ScopePackages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    ManagerEmail = table.Column<string>(type: "TEXT", nullable: false),
+                    ProjectId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ScopePackages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ScopePackages_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Activities",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ProjectId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    InterfacePointId = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Activities", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Activities_InterfacePoints_InterfacePointId",
+                        column: x => x.InterfacePointId,
+                        principalTable: "InterfacePoints",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Activities_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BOQs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ProjectId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Quantity = table.Column<int>(type: "INTEGER", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Cost = table.Column<decimal>(type: "TEXT", nullable: false),
+                    Unit = table.Column<string>(type: "TEXT", nullable: false),
+                    InterfacePointId = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BOQs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BOQs_InterfacePoints_InterfacePointId",
+                        column: x => x.InterfacePointId,
+                        principalTable: "InterfacePoints",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_BOQs_Projects_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "Projects",
                         principalColumn: "Id",
@@ -370,15 +414,25 @@ namespace PM.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "7edf9e8c-f8c0-47c1-9d65-d241241bd7b5", "fa20c217-fd80-4f3f-a5a2-6be15c910ce3", "TeamManager", "TEAMMANAGER" },
-                    { "b91975a0-b36d-4142-a205-79122aed01f3", "6bc966f2-9b45-4d4c-941d-837b549b95c5", "Cordinator", "CORDINATOR" },
-                    { "f7b86157-ccaf-4f04-9464-2ef6363ceda5", "6fcb38b3-6ccf-4933-989d-702d6aaa554a", "TeamMember", "TEAMMEMBER" }
+                    { "566d06b6-35ad-4311-952c-2c14a117e0c0", "92cda1aa-66ab-4e04-bc63-84c18fcab050", "TeamMember", "TEAMMEMBER" },
+                    { "89e7b7a9-8ec3-4a46-ad4b-6d39a6948692", "f82da172-5d3a-498f-abac-973b1110c6ac", "Cordinator", "CORDINATOR" },
+                    { "967d8ac8-e830-4607-8ce9-abb5752856f4", "7f3b932a-afb2-4582-a040-3669773820d9", "TeamManager", "TEAMMANAGER" }
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Activity_ProjectID",
-                table: "Activity",
-                column: "ProjectID");
+                name: "IX__System_projectId",
+                table: "_System",
+                column: "projectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Activities_InterfacePointId",
+                table: "Activities",
+                column: "InterfacePointId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Activities_ProjectId",
+                table: "Activities",
+                column: "ProjectId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -418,9 +472,14 @@ namespace PM.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_BOQ_ProjectID",
-                table: "BOQ",
-                column: "ProjectID");
+                name: "IX_BOQs_InterfacePointId",
+                table: "BOQs",
+                column: "InterfacePointId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BOQs_ProjectId",
+                table: "BOQs",
+                column: "ProjectId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Chats_InterfacePointId",
@@ -428,19 +487,14 @@ namespace PM.Migrations
                 column: "InterfacePointId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Departments_ProjectId",
+                table: "Departments",
+                column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Documentation_InterfacePointId",
                 table: "Documentation",
                 column: "InterfacePointId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_InterfacePoints_ActivityId",
-                table: "InterfacePoints",
-                column: "ActivityId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_InterfacePoints_BOQId",
-                table: "InterfacePoints",
-                column: "BOQId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_InterfacePoints_ProjectId",
@@ -448,9 +502,9 @@ namespace PM.Migrations
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Owner_ProjectId",
+                name: "IX_Owner_projectId",
                 table: "Owner",
-                column: "ProjectId");
+                column: "projectId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_OwnerId",
@@ -458,14 +512,20 @@ namespace PM.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ScopePackage_ProjectId",
-                table: "ScopePackage",
+                name: "IX_ScopePackages_ProjectId",
+                table: "ScopePackages",
                 column: "ProjectId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "_System");
+
+            migrationBuilder.DropTable(
+                name: "Activities");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -482,7 +542,13 @@ namespace PM.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "BOQs");
+
+            migrationBuilder.DropTable(
                 name: "Chats");
+
+            migrationBuilder.DropTable(
+                name: "Departments");
 
             migrationBuilder.DropTable(
                 name: "Documentation");
@@ -491,19 +557,13 @@ namespace PM.Migrations
                 name: "Owner");
 
             migrationBuilder.DropTable(
-                name: "ScopePackage");
+                name: "ScopePackages");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "InterfacePoints");
-
-            migrationBuilder.DropTable(
-                name: "Activity");
-
-            migrationBuilder.DropTable(
-                name: "BOQ");
 
             migrationBuilder.DropTable(
                 name: "Projects");

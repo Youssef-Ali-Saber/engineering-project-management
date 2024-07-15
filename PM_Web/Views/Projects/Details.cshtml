@@ -4,87 +4,124 @@
     ViewData["Title"] = "Project Details";
 }
 
-<h1 class="text-center mt-3">Project Details</h1>
+<h2 class="text-center mt-4">@ViewData["Title"]</h2>
 
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <div class="card">
-                <div class="card-header">
-                    <h3>@Model.ProjectName</h3>
-                </div>
-                <div class="card-body">
-                    <div class="form-group">
-                        <label>Location:</label>
-                        <p class="form-control-static">@Model.Location</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Project Nature:</label>
-                        <p class="form-control-static">@Model.ProjectNature</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Project Type:</label>
-                        <p class="form-control-static">@Model.ProjectType</p>
-                    </div>
-                    <div class="form-group">
-                        <label>JV Partners:</label>
-                        <p class="form-control-static">@Model.JVPartners</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Project Value:</label>
-                        <p class="form-control-static">@Model.ProjectValue.ToString("C")</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Project Stage:</label>
-                        <p class="form-control-static">@Model.ProjectStage</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Delivery Strategies:</label>
-                        <p class="form-control-static">@Model.DeliveryStrategies</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Contracting Strategies:</label>
-                        <p class="form-control-static">@Model.ContractingStrategies</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Owners:</label>
-                        <select class="form-control">
-                            @foreach (var owner in Model.Owners)
-                            {
-                                <option>@owner.Name</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Scope Packages:</label>
-                        <select class="form-control">
-                            @foreach (var scopePackage in Model.ScopePackages)
-                            {
-                                <option>@scopePackage.Name</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Bill of Quantities (BOQ):</label>
-                        <select class="form-control">
-                            @foreach (var boq in Model.BOQs)
-                            {
-                                <option>@boq.Name - Quantity: @boq.Quantity, Cost: @boq.Cost</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Activities:</label>
-                        <select class="form-control">
-                            @foreach (var activity in Model.Activities)
-                            {
-                                <option>@activity.Name - Start: @activity.StartDate.ToShortDateString(), End: @activity.EndDate.ToShortDateString()</option>
-                            }
-                        </select>
-                    </div>
-                </div>
-                <div class="card-footer text-center">
-                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow border-0">
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post" class="row needs-validation" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="form-group mb-3 col-md-6">
+                            <label class="form-label">Location:</label>
+                            <p class="form-control-static">@Model.Location</p>
+                        </div>
+                        <div class="form-group mb-3 col-md-6">
+                            <label class="form-label">Project Nature:</label>
+                            <p class="form-control-static">@Model.ProjectNature</p>
+                        </div>
+                        <div class="form-group mb-3 col-md-6">
+                            <label class="form-label">Project Type:</label>
+                            <p class="form-control-static">@Model.ProjectType</p>
+                        </div>
+                        <div class="form-group mb-3 col-md-6">
+                            <label class="form-label">JV Partners:</label>
+                            <p class="form-control-static">@Model.JVPartners</p>
+                        </div>
+                        <div class="form-group mb-3 col-md-6">
+                            <label class="form-label">Project Value:</label>
+                            <p class="form-control-static">@Model.ProjectValue.ToString("C")</p>
+                        </div>
+                        <div class="form-group mb-3 col-md-6">
+                            <label class="form-label">Project Stage:</label>
+                            <p class="form-control-static">@Model.ProjectStage</p>
+                        </div>
+                        <div class="form-group mb-3 col-md-6">
+                            <label class="form-label">Delivery Strategies:</label>
+                            <p class="form-control-static">@Model.DeliveryStrategies</p>
+                        </div>
+                        <div class="form-group mb-3 col-md-6">
+                            <label class="form-label">Contracting Strategies:</label>
+                            <p class="form-control-static">@Model.ContractingStrategies</p>
+                        </div>
+                        <hr />
+
+                        <div class="form-group mb-3">
+                            <label class="control-label font-weight-bold">Owners</label>
+                            <select class="form-control">
+                                @foreach (var owner in Model.Owners)
+                                {
+                                    <option>@owner.Name</option>
+                                }
+                            </select>
+                        </div>
+
+                        <hr />
+
+                        <div class="form-group mb-3">
+                            <label class="control-label font-weight-bold">Systems</label>
+                            <select class="form-control">
+                                @foreach (var system in Model.Systems)
+                                {
+                                    <option>@system.Name</option>
+                                }
+                            </select>
+                        </div>
+
+                        <hr />
+
+                        <div class="form-group mb-3">
+                            <label class="control-label font-weight-bold">Scope Packages</label>
+                            <select class="form-control">
+                                @foreach (var scopePackage in Model.ScopePackages)
+                                {
+                                    <option>@scopePackage.Name</option>
+                                }
+                            </select>
+                        </div>
+
+                        <hr />
+
+                        <div class="form-group mb-3">
+                            <label class="control-label font-weight-bold">Departments</label>
+                            <select class="form-control">
+                                @foreach (var department in Model.Departments)
+                                {
+                                    <option>@department.Name</option>
+                                }
+                            </select>
+                        </div>
+
+                        <hr />
+
+                        <div class="form-group mb-3">
+                            <label class="control-label font-weight-bold">BOQs</label>
+                            <select class="form-control">
+                                @foreach (var boq in Model.BOQs)
+                                {
+                                    <option>@boq.Name - Quantity: @boq.Quantity, Cost: @boq.Cost</option>
+                                }
+                            </select>
+                        </div>
+
+                        <hr />
+
+                        <div class="form-group mb-3">
+                            <label class="control-label font-weight-bold">Activities</label>
+                            <select class="form-control">
+                                @foreach (var activity in Model.Activities)
+                                {
+                                    <option>@activity.Name - Start: @activity.StartDate.ToShortDateString(), End: @activity.EndDate.ToShortDateString()</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <a asp-action="Index" class="btn btn-secondary btn-lg ml-2">Back to List</a>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

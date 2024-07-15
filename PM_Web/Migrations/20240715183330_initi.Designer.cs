@@ -11,8 +11,8 @@ using PM.Data;
 namespace PM.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240714032817_initi0")]
-    partial class initi0
+    [Migration("20240715183330_initi")]
+    partial class initi
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,22 +48,22 @@ namespace PM.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "915af4c7-05d8-4144-b52c-2a9222cbf6c6",
-                            ConcurrencyStamp = "566d0f9b-74af-4f06-b6bc-d6c0684878b4",
+                            Id = "89e7b7a9-8ec3-4a46-ad4b-6d39a6948692",
+                            ConcurrencyStamp = "f82da172-5d3a-498f-abac-973b1110c6ac",
                             Name = "Cordinator",
                             NormalizedName = "CORDINATOR"
                         },
                         new
                         {
-                            Id = "9eb7d643-b75b-478d-8601-acf4e692e69b",
-                            ConcurrencyStamp = "08ed1ef6-dbdc-461e-b252-8f7375e2c7a4",
+                            Id = "566d06b6-35ad-4311-952c-2c14a117e0c0",
+                            ConcurrencyStamp = "92cda1aa-66ab-4e04-bc63-84c18fcab050",
                             Name = "TeamMember",
                             NormalizedName = "TEAMMEMBER"
                         },
                         new
                         {
-                            Id = "9d1f1242-546c-4940-9657-a192ac70520d",
-                            ConcurrencyStamp = "82350318-5f5a-4ec0-8d8f-2da2c596ed06",
+                            Id = "967d8ac8-e830-4607-8ce9-abb5752856f4",
+                            ConcurrencyStamp = "7f3b932a-afb2-4582-a040-3669773820d9",
                             Name = "TeamManager",
                             NormalizedName = "TEAMMANAGER"
                         });
@@ -180,11 +180,14 @@ namespace PM.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("InterfacePointId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ProjectID")
+                    b.Property<int>("ProjectId")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("StartDate")
@@ -192,9 +195,11 @@ namespace PM.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectID");
+                    b.HasIndex("InterfacePointId");
 
-                    b.ToTable("Activity");
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("Activities");
                 });
 
             modelBuilder.Entity("PM.Models.ApplicationUser", b =>
@@ -280,21 +285,30 @@ namespace PM.Migrations
                     b.Property<decimal>("Cost")
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("InterfacePointId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ProjectID")
+                    b.Property<int>("ProjectId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectID");
+                    b.HasIndex("InterfacePointId");
 
-                    b.ToTable("BOQ");
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("BOQs");
                 });
 
             modelBuilder.Entity("PM.Models.Chat", b =>
@@ -322,6 +336,34 @@ namespace PM.Migrations
                     b.HasIndex("InterfacePointId");
 
                     b.ToTable("Chats");
+                });
+
+            modelBuilder.Entity("PM.Models.Department", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("TeamManagerEmail")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TeamMembersEmails")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("Departments");
                 });
 
             modelBuilder.Entity("PM.Models.Documentation", b =>
@@ -355,12 +397,6 @@ namespace PM.Migrations
                     b.Property<string>("Accountable")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("ActivityId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("BOQId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Category")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -372,6 +408,10 @@ namespace PM.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ExtraSystem")
@@ -419,10 +459,6 @@ namespace PM.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActivityId");
-
-                    b.HasIndex("BOQId");
-
                     b.HasIndex("ProjectId");
 
                     b.ToTable("InterfacePoints");
@@ -438,12 +474,12 @@ namespace PM.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ProjectId")
+                    b.Property<int>("projectId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectId");
+                    b.HasIndex("projectId");
 
                     b.ToTable("Owner");
                 });
@@ -492,14 +528,6 @@ namespace PM.Migrations
                     b.Property<decimal>("ProjectValue")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("TeamManager")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("TeamMembers")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.HasKey("Id");
 
                     b.HasIndex("OwnerId");
@@ -513,6 +541,10 @@ namespace PM.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("ManagerEmail")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -524,7 +556,7 @@ namespace PM.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("ScopePackage");
+                    b.ToTable("ScopePackages");
                 });
 
             modelBuilder.Entity("PM.Models._System", b =>
@@ -537,12 +569,12 @@ namespace PM.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ProjectId")
+                    b.Property<int>("projectId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectId");
+                    b.HasIndex("projectId");
 
                     b.ToTable("_System");
                 });
@@ -600,20 +632,32 @@ namespace PM.Migrations
 
             modelBuilder.Entity("PM.Models.Activity", b =>
                 {
-                    b.HasOne("PM.Models.Project", null)
+                    b.HasOne("PM.Models.InterfacePoint", null)
                         .WithMany("Activities")
-                        .HasForeignKey("ProjectID")
+                        .HasForeignKey("InterfacePointId");
+
+                    b.HasOne("PM.Models.Project", "Project")
+                        .WithMany("Activities")
+                        .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("PM.Models.BOQ", b =>
                 {
-                    b.HasOne("PM.Models.Project", null)
+                    b.HasOne("PM.Models.InterfacePoint", null)
                         .WithMany("BOQs")
-                        .HasForeignKey("ProjectID")
+                        .HasForeignKey("InterfacePointId");
+
+                    b.HasOne("PM.Models.Project", "Project")
+                        .WithMany("BOQs")
+                        .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("PM.Models.Chat", b =>
@@ -623,6 +667,17 @@ namespace PM.Migrations
                         .HasForeignKey("InterfacePointId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("PM.Models.Department", b =>
+                {
+                    b.HasOne("PM.Models.Project", "Project")
+                        .WithMany("Departments")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("PM.Models.Documentation", b =>
@@ -636,23 +691,11 @@ namespace PM.Migrations
 
             modelBuilder.Entity("PM.Models.InterfacePoint", b =>
                 {
-                    b.HasOne("PM.Models.Activity", "Activity")
-                        .WithMany()
-                        .HasForeignKey("ActivityId");
-
-                    b.HasOne("PM.Models.BOQ", "BOQ")
-                        .WithMany()
-                        .HasForeignKey("BOQId");
-
                     b.HasOne("PM.Models.Project", "Project")
                         .WithMany()
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Activity");
-
-                    b.Navigation("BOQ");
 
                     b.Navigation("Project");
                 });
@@ -661,7 +704,7 @@ namespace PM.Migrations
                 {
                     b.HasOne("PM.Models.Project", null)
                         .WithMany("Owners")
-                        .HasForeignKey("ProjectId")
+                        .HasForeignKey("projectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -679,24 +722,30 @@ namespace PM.Migrations
 
             modelBuilder.Entity("PM.Models.ScopePackage", b =>
                 {
-                    b.HasOne("PM.Models.Project", null)
+                    b.HasOne("PM.Models.Project", "Project")
                         .WithMany("ScopePackages")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("PM.Models._System", b =>
                 {
                     b.HasOne("PM.Models.Project", null)
                         .WithMany("Systems")
-                        .HasForeignKey("ProjectId")
+                        .HasForeignKey("projectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
             modelBuilder.Entity("PM.Models.InterfacePoint", b =>
                 {
+                    b.Navigation("Activities");
+
+                    b.Navigation("BOQs");
+
                     b.Navigation("Documentations");
 
                     b.Navigation("chat");
@@ -707,6 +756,8 @@ namespace PM.Migrations
                     b.Navigation("Activities");
 
                     b.Navigation("BOQs");
+
+                    b.Navigation("Departments");
 
                     b.Navigation("Owners");
 

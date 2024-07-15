@@ -17,7 +17,7 @@
                         <div class="form-group mb-3">
                             <label asp-for="Nature" class="form-label">Nature</label>
                             <select asp-for="Nature" class="form-control form-control-lg">
-                                <option>--Select--</option>
+                                <option value="">--Select--</option>
                                 <option value="Hard">Hard</option>
                                 <option value="Soft">Soft</option>
                             </select>
@@ -25,9 +25,15 @@
                         </div>
 
                         <div class="form-group mb-3">
+                            <label asp-for="Description" class="control-label font-weight-bold">Description</label>
+                            <textarea  asp-for="Description" class="form-control form-control-lg"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
                             <label asp-for="Scope" class="form-label">Scope</label>
                             <select asp-for="Scope" class="form-control form-control-lg" id="Scope" onchange="toggleFields()">
-                                <option>--Select--</option>
+                                <option value="">--Select--</option>
                                 <option value="Intra">Intra</option>
                                 <option value="Inter">Inter</option>
                                 <option value="Exter">Exter</option>
@@ -52,7 +58,7 @@
                             <select asp-for="System1" class="form-control form-control-lg" asp-items="ViewBag?.Systems"></select>
                             <span asp-validation-for="System1" class="text-danger"></span>
                         </div>
-                        
+
                         <div class="form-group mb-3" id="System2Container">
                             <label asp-for="System2" class="control-label font-weight-bold">System 2</label>
                             <select asp-for="System2" class="form-control form-control-lg" asp-items="ViewBag?.Systems"></select>
@@ -68,7 +74,7 @@
                         <div class="form-group mb-3">
                             <label asp-for="Category" class="form-label">Category</label>
                             <select asp-for="Category" class="form-control form-control-lg">
-                                <option >--Select--</option>
+                                <option>--Select--</option>
                                 <option value="Physical & Functional">Physical & Functional</option>
                                 <option value="Contractual & Organizational">Contractual & Organizational</option>
                                 <option value="Resource">Resource</option>
@@ -107,11 +113,47 @@
                             <select asp-for="Supported" class="form-control form-control-lg" asp-items="ViewBag?.ScopePackages"></select>
                             <span asp-validation-for="Supported" class="text-danger"></span>
                         </div>
+                        
 
+                        <div class="form-group mb-3">
+                            <label class="form-label">BOQs</label>
+                            <table class="table table-bordered">
+                                <tbody id="boqTable">
+                                    <tr>
+                                        <td>1</td>
+                                        <td>
+                                            <select name="BOQs[0]" class="form-control form-control-lg" asp-items="ViewBag?.BOQs"></select>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-primary" onclick="addBOQRow()">Add BOQ</button>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label">Activities</label>
+                            <table class="table table-bordered">
+                                <tbody id="activitiesTable">
+                                    <tr>
+                                        <td>1</td>
+                                        <td>
+                                            <select name="Activities[0]" class="form-control form-control-lg" asp-items="ViewBag?.Activities"></select>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-primary" onclick="addActivityRow()">Add Activity</button>
+                        </div>
 
                         <div class="form-group mb-3">
                             <label class="form-label">Documentations</label>
-                            <table class="table table-bordered ">
+                            <table class="table table-bordered">
                                 <tbody id="documentationTable">
                                     <tr>
                                         <td><input name="Documentations[0].DocumentationFile" type="file" class="form-control form-control-lg" /></td>
@@ -164,7 +206,7 @@
                 scopePackage1Container.style.display = 'block';
                 system1Container.style.display = 'block';
                 extraSystemContainer.style.display = 'block';
-            }else if (scopeValue === 'Intra') {
+            } else if (scopeValue === 'Intra') {
                 scopePackage1Container.style.display = 'block';
                 system1Container.style.display = 'block';
                 system2Container.style.display = 'block';
@@ -175,9 +217,29 @@
             toggleFields();
         });
 
+        function addBOQRow() {
+            const table = document.getElementById('boqTable');
+            const rowCount = table.rows.length;
+            const row = table.insertRow(rowCount);
+
+            const cell1 = row.insertCell(0);
+            const select = document.createElement('select');
+            select.name = `BOQs[${rowCount}]`;
+            select.className = 'form-control form-control-lg';
+            select.innerHTML = document.querySelector('#boqTable tr td select').innerHTML;
+            cell1.appendChild(select);
+
+            const cell2 = row.insertCell(1);
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'btn btn-danger';
+            removeButton.onclick = function () { removeRow(this); };
+            removeButton.textContent = 'Remove';
+            cell2.appendChild(removeButton);
+        }
+
         function addDocumentationRow() {
             const table = document.getElementById('documentationTable');
-            table.style.display = 'none';
             const rowCount = table.rows.length;
             const row = table.insertRow(rowCount);
 
@@ -204,6 +266,29 @@
             removeButton.textContent = 'Remove';
             cell3.appendChild(removeButton);
         }
+
+
+        function addActivityRow() {
+            const table = document.getElementById('activitiesTable');
+            const rowCount = table.rows.length;
+            const row = table.insertRow(rowCount);
+
+            const cell1 = row.insertCell(0);
+            const select = document.createElement('select');
+            select.name = `Activities[${rowCount}]`;
+            select.className = 'form-control form-control-lg';
+            select.innerHTML = document.querySelector('#activitiesTable tr td select').innerHTML;
+            cell1.appendChild(select);
+
+            const cell2 = row.insertCell(1);
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'btn btn-danger';
+            removeButton.onclick = function () { removeRow(this); };
+            removeButton.textContent = 'Remove';
+            cell2.appendChild(removeButton);
+        }
+
 
         function removeRow(button) {
             const row = button.closest('tr');

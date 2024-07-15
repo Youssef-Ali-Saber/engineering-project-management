@@ -39,10 +39,12 @@ namespace PM.Controllers
             }
 
             var project = _context.Projects
-                .Include(p => p.Owners)
-                .Include(p => p.ScopePackages)
-                .Include(p => p.BOQs)
                 .Include(p => p.Activities)
+                .Include(p => p.BOQs)
+                .Include(p => p.ScopePackages)
+                .Include(p => p.Departments)
+                .Include(p => p.Owners)
+                .Include(p => p.Systems)
                 .FirstOrDefault(p => p.Id == id);
 
             if (project == null)
@@ -65,7 +67,7 @@ namespace PM.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ProjectName,Location,Owners,ProjectNature,ProjectType,ScopePackages,JVPartners,ProjectValue,ProjectStage,DeliveryStrategies,ContractingStrategies,BOQs,Activities,Systems,TeamMembers,TeamManager")] ProjectViewModel viewModel)
+        public async Task<IActionResult> Create(ProjectViewModel viewModel)
         {
             var ownerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var project = new Project
@@ -79,17 +81,315 @@ namespace PM.Controllers
                 ProjectStage = viewModel.ProjectStage,
                 DeliveryStrategies = viewModel.DeliveryStrategies,
                 ContractingStrategies = viewModel.ContractingStrategies,
-                Owners = viewModel.Owners,
-                ScopePackages = viewModel.ScopePackages,
-                BOQs = viewModel.BOQs,
-                Activities = viewModel.Activities,
-                Systems = viewModel.Systems,
                 OwnerId = ownerId,
-                TeamManager = viewModel.TeamManager.Email,
-                TeamMembers = viewModel.TeamMembers.Select(s => s.Email).ToList()
-
+                Owners = viewModel.Owners.Select(s => new Owner { Name = s}).ToList(),
+                Systems = viewModel.Systems.Select(s => new _System { Name = s }).ToList(),
+                ScopePackages = viewModel.ScopePackages.Select(s => new ScopePackage { Name = s.Name, ManagerEmail = s.InterfaceManager.Email}).ToList(),
+                BOQs= viewModel.BOQs.Select(b => new BOQ
+                {
+                    Quantity = b.Quantity,
+                    Cost = b.Cost,
+                    Name = b.Name,
+                    Unit = b.Unit
+                }).ToList(),
+                Activities = viewModel.Activities.Select(a => new Activity
+                {
+                    Name = a.Name,
+                    StartDate = a.StartDate,
+                    EndDate = a.FinishDate
+                }).ToList(),
+                Departments = viewModel.Departments.Select(d => new Department
+                {
+                    Name = d.Name,
+                    TeamManagerEmail = d.TeamManager.Email,
+                    TeamMembersEmails = d.TeamMembers.Select(m => m.Email).ToList()
+                }).ToList()
             };
-            foreach (var teamMember in viewModel.TeamMembers)
+
+            foreach (var scopePackage in viewModel.ScopePackages)
+            {
+                if (!await CreateUser(scopePackage.InterfaceManager,"TeamManager"))
+                {
+                    return View(viewModel);
+                }
+            }
+
+            foreach (var department in viewModel.Departments)
+            {
+                foreach (var teamMember in department.TeamMembers)
+                {
+                    if (!await CreateUser(teamMember, "TeamMember"))
+                    {
+                        return View(viewModel);
+                    }
+                }
+                if (!await CreateUser(department.TeamManager, "TeamManager"))
+                {
+                    return View(viewModel);
+                }
+            }
+
+
+
+            
+            _context.Projects.Add(project);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var project = await _context.Projects
+                .Include(p => p.Activities)
+                .Include(p => p.BOQs)
+                .Include(p => p.ScopePackages)
+                .Include(p => p.Departments)
+                .Include(p => p.Owners)
+                .Include(p => p.Systems)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new ProjectViewModel
+            {
+                Id = project.Id,
+                ProjectName = project.ProjectName,
+                Location = project.Location,
+                ProjectNature = project.ProjectNature,
+                ProjectType = project.ProjectType,
+                JVPartners = project.JVPartners,
+                ProjectValue = project.ProjectValue,
+                ProjectStage = project.ProjectStage,
+                DeliveryStrategies = project.DeliveryStrategies,
+                ContractingStrategies = project.ContractingStrategies,
+                Owners = project.Owners.Select(s => s.Name ).ToList(),
+                Systems = project.Systems.Select(s => s.Name ).ToList(),
+                ScopePackages = project.ScopePackages.Select(sp => new ScopePackageViewModel
+                {
+                    Name = sp.Name,
+                    InterfaceManager = new TeamMember
+                    {
+                        Name = sp.ManagerEmail,  // Assuming you have a property for the name of the manager
+                        Email = sp.ManagerEmail,
+                        Password = "" // Assuming password is not stored in this context
+                    }
+                }).ToList(),
+                BOQs = project.BOQs.Select(boq => new BOQViewModel
+                {
+                    Name = boq.Name,
+                    Quantity = boq.Quantity,
+                    Cost = boq.Cost,
+                    Unit = boq.Unit
+                }).ToList(),
+                Activities = project.Activities.Select(activity => new ActivityViewModel
+                {
+                    Name = activity.Name,
+                    StartDate = activity.StartDate,
+                    FinishDate = activity.EndDate
+                }).ToList(),
+                Departments = project.Departments.Select(department => new DepartmentViewModel
+                {
+                    Name = department.Name,
+                    TeamManager = new TeamMember
+                    {
+                        Name = department.TeamManagerEmail, // Assuming you have a property for the name of the team manager
+                        Email = department.TeamManagerEmail,
+                        Password = "" // Assuming password is not stored in this context
+                    },
+                    TeamMembers = department.TeamMembersEmails.Select(email => new TeamMember
+                    {
+                        Email = email,
+                        Name = "", // Assuming you have a way to get the name of the team members
+                        Password = "" // Assuming password is not stored in this context
+                    }).ToList()
+                }).ToList()
+            };
+
+            return View(viewModel);
+        }
+
+        // POST: Projects/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, ProjectViewModel viewModel)
+        {
+            if (id != viewModel.Id)
+            {
+                return NotFound();
+            }
+
+            var project = await _context.Projects
+                .Include(p => p.Activities)
+                .Include(p => p.BOQs)
+                .Include(p => p.ScopePackages)
+                .Include(p => p.Departments)
+                .Include(p => p.Owners)
+                .Include(p => p.Systems)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            project.ProjectName = viewModel.ProjectName;
+            project.Location = viewModel.Location;
+            project.ProjectNature = viewModel.ProjectNature;
+            project.ProjectType = viewModel.ProjectType;
+            project.JVPartners = viewModel.JVPartners;
+            project.ProjectValue = viewModel.ProjectValue;
+            project.ProjectStage = viewModel.ProjectStage;
+            project.DeliveryStrategies = viewModel.DeliveryStrategies;
+            project.ContractingStrategies = viewModel.ContractingStrategies;
+            
+            if (viewModel.Owners != null)
+            {
+                foreach (var owner in viewModel.Owners)
+                {
+                    project.Owners.Add(new Owner { Name = owner, projectId = project.Id });
+                }
+            }
+            
+            if (viewModel.Systems != null)
+            {
+                foreach (var system in viewModel.Systems)
+                {
+                    project.Systems.Add(new _System { Name = system, projectId = project.Id });
+                }
+            }
+
+            
+            // Update ScopePackages
+            foreach (var spVM in viewModel.ScopePackages)
+            {
+                project.ScopePackages.Add(new ScopePackage
+                {
+                    Name = spVM.Name,
+                    ManagerEmail = spVM.InterfaceManager.Email,
+                    ProjectId = project.Id
+                });
+
+                if (!await CreateUser(spVM.InterfaceManager, "TeamManager"))
+                {
+                    return View(viewModel);
+                }
+
+            }
+
+            // Update BOQs
+            foreach (var boqVM in viewModel.BOQs)
+            {
+                project.BOQs.Add(new BOQ
+                {
+                    Name = boqVM.Name,
+                    Quantity = boqVM.Quantity,
+                    Cost = boqVM.Cost,
+                    Unit = boqVM.Unit,
+                    ProjectId = project.Id
+                });
+            }
+
+            // Update Activities
+            foreach (var activityVM in viewModel.Activities)
+            {
+                project.Activities.Add(new Activity
+                {
+                    Name = activityVM.Name,
+                    StartDate = activityVM.StartDate,
+                    EndDate = activityVM.FinishDate,
+                    ProjectId = project.Id
+                });
+            }
+
+            // Update Departments
+            foreach (var departmentVM in viewModel.Departments)
+            {
+                var department = new Department
+                {
+                    Name = departmentVM.Name,
+                    TeamManagerEmail = departmentVM.TeamManager.Email,
+                    TeamMembersEmails = departmentVM.TeamMembers.Select(tm => tm.Email).ToList(),
+                    ProjectId = project.Id
+                };
+                project.Departments.Add(department);
+                foreach (var teamMember in departmentVM.TeamMembers)
+                {
+                    if (!await CreateUser(teamMember, "TeamMember"))
+                    {
+                        return View(viewModel);
+                    }
+                }
+                if (!await CreateUser(departmentVM.TeamManager, "TeamManager"))
+                {
+                    return View(viewModel);
+                }
+            }
+
+            try
+            {
+                _context.Projects.Update(project);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ProjectExists(viewModel.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        private bool ProjectExists(int id)
+        {
+            return _context.Projects.Any(e => e.Id == id);
+        }
+
+        // POST: Projects/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var project = await _context.Projects.FindAsync(id);
+            if (project != null)
+            {
+                _context.Projects.Remove(project);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+
+
+
+
+
+
+
+        //---------------------------------------------------------------------
+        //---------------------------------------------------------------------
+        //---------------------------------------------------------------------
+        private async Task<bool> CreateUser(TeamMember teamMember,string role)
+        {
+            var user = await _userManager.FindByEmailAsync(teamMember.Email);
+            if (user == null)
             {
                 var userTeamMember = new ApplicationUser
                 {
@@ -100,7 +400,7 @@ namespace PM.Controllers
                 var resultOfCreate = await _userManager.CreateAsync(userTeamMember, teamMember.Password);
                 if (resultOfCreate.Succeeded)
                 {
-                    var resultRole = await _userManager.AddToRoleAsync(userTeamMember, "TeamMember");
+                    var resultRole = await _userManager.AddToRoleAsync(userTeamMember, role);
                     if (!resultRole.Succeeded)
                     {
                         var resultDelete = await _userManager.DeleteAsync(userTeamMember);
@@ -119,8 +419,9 @@ namespace PM.Controllers
                         {
                             ModelState.AddModelError(string.Empty, error.Description);
                         }
-                        return View(viewModel);
+                        return false;
                     }
+                    return true;
                 }
                 else
                 {
@@ -128,158 +429,16 @@ namespace PM.Controllers
                     {
                         ModelState.AddModelError(string.Empty, error.Description);
                     }
-                    return View(viewModel);
-                }
-
-            }
-            var userTeamManager = new ApplicationUser
-            {
-                FullName = viewModel.TeamManager.Name,
-                Email = viewModel.TeamManager.Email,
-                UserName = viewModel.TeamManager.Email
-            };
-            var resultCreate = await _userManager.CreateAsync(userTeamManager, viewModel.TeamManager.Password);
-            if (resultCreate.Succeeded)
-            {
-                var resultRole = await _userManager.AddToRoleAsync(userTeamManager, "TeamManager");
-                if (!resultRole.Succeeded)
-                {
-                    var resultDelete = await _userManager.DeleteAsync(userTeamManager);
-                    if (resultDelete.Succeeded)
-                    {
-                        ModelState.AddModelError(string.Empty, "Failed to create user");
-                    }
-                    else
-                    {
-                        foreach (var error in resultDelete.Errors)
-                        {
-                            ModelState.AddModelError(string.Empty, error.Description);
-                        }
-                    }
-                    foreach (var error in resultRole.Errors)
-                    {
-                        ModelState.AddModelError(string.Empty, error.Description);
-                    }
-                    return View(viewModel);
+                    return false;
                 }
             }
             else
             {
-                foreach (var error in resultCreate.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
-                return View(viewModel);
+                ModelState.AddModelError(string.Empty, "User already exists");
+                return false;
             }
 
 
-            _context.Add(project);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
-
-        // GET: Projects/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var project = await _context.Projects
-                .Include(inc => inc.Owners)
-                .Include(inc => inc.Activities)
-                .Include(inc => inc.BOQs)
-                .Include(inc => inc.ScopePackages)
-                .FirstOrDefaultAsync(p => p.Id == id);
-            if (project == null)
-            {
-                return NotFound();
-            }
-
-            return View(project);
-        }
-
-        // POST: Projects/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ProjectName,Location,Owners,ProjectNature,ProjectType,ScopePackages,JVPartners,ProjectValue,ProjectStage,DeliveryStrategies,ContractingStrategies,BOQs,Activities")] ProjectViewModel viewModel, string removedItems)
-        {
-
-            if (id != viewModel.Id)
-            {
-                return NotFound();
-            }
-            try
-            {
-                var project = await _context.Projects
-                .Include(inc => inc.Owners)
-                .Include(inc => inc.Activities)
-                .Include(inc => inc.BOQs)
-                .Include(inc => inc.ScopePackages)
-                .FirstOrDefaultAsync(p => p.Id == id);
-                if (project == null)
-                {
-                    return NotFound();
-                }
-                project.ProjectName = viewModel.ProjectName;
-                project.Location = viewModel.Location;
-                project.ProjectNature = viewModel.ProjectNature;
-                project.ProjectType = viewModel.ProjectType;
-                project.JVPartners = viewModel.JVPartners;
-                project.ProjectValue = viewModel.ProjectValue;
-                project.ProjectStage = viewModel.ProjectStage;
-                project.DeliveryStrategies = viewModel.DeliveryStrategies;
-                project.Owners = viewModel.Owners;
-                project.ScopePackages = viewModel.ScopePackages;
-                project.Activities = viewModel.Activities;
-                project.BOQs = viewModel.BOQs;
-
-                _context.Projects.Update(project);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                return NotFound();
-
-            }
-            return RedirectToAction(nameof(Index));
-        }
-
-        // GET: Projects/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var project = await _context.Projects
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (project == null)
-            {
-                return NotFound();
-            }
-
-            return View(project);
-        }
-
-        // POST: Projects/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var project = await _context.Projects.FindAsync(id);
-            if (project != null)
-            {
-                _context.Projects.Remove(project);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
     }
 }

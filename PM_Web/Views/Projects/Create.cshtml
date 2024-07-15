@@ -11,70 +11,105 @@
     <div class="row justify-content-center mt-5">
         <div class="col-md-8">
             <div class="card shadow border-0">
-               
                 <div class="card-body p-4">
                     <form asp-action="Create" method="post" class="row needs-validation" novalidate>
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
                         <div class="form-group mb-3 col-md-6">
                             <label asp-for="ProjectName" class="control-label font-weight-bold"></label>
-                            <input asp-for="ProjectName" class="form-control form-control-lg" placeholder="Enter project name" />
+                            <input asp-for="ProjectName" class="form-control form-control-lg" placeholder="project name" />
                             <span asp-validation-for="ProjectName" class="text-danger"></span>
                         </div>
                         <div class="form-group mb-3 col-md-6">
                             <label asp-for="Location" class="control-label font-weight-bold"></label>
-                            <input asp-for="Location" class="form-control form-control-lg" placeholder="Enter location" />
+                            <input asp-for="Location" class="form-control form-control-lg" placeholder="location" />
                             <span asp-validation-for="Location" class="text-danger"></span>
                         </div>
 
                         <div class="form-group mb-3 col-md-6">
-                            <label asp-for="ProjectNature" class="control-label font-weight-bold"></label>
-                            <input asp-for="ProjectNature" class="form-control form-control-lg" placeholder="Enter project nature" />
-                            <span asp-validation-for="ProjectNature" class="text-danger"></span>
-                        </div>
-                        <div class="form-group mb-3 col-md-6">
-                            <label asp-for="ProjectType" class="control-label font-weight-bold"></label>
-                            <input asp-for="ProjectType" class="form-control form-control-lg" placeholder="Enter project type" />
-                            <span asp-validation-for="ProjectType" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-group mb-3 col-md-6">
                             <label asp-for="JVPartners" class="control-label font-weight-bold"></label>
-                            <input asp-for="JVPartners" class="form-control form-control-lg" placeholder="Enter number of JV partners" />
+                            <input asp-for="JVPartners" class="form-control form-control-lg" placeholder="number of JV partners" />
                             <span asp-validation-for="JVPartners" class="text-danger"></span>
                         </div>
                         <div class="form-group mb-3 col-md-6">
                             <label asp-for="ProjectValue" class="control-label font-weight-bold"></label>
-                            <input asp-for="ProjectValue" class="form-control form-control-lg" placeholder="Enter project value" />
+                            <input asp-for="ProjectValue" class="form-control form-control-lg" placeholder="project value" />
                             <span asp-validation-for="ProjectValue" class="text-danger"></span>
                         </div>
 
                         <div class="form-group mb-3 col-md-6">
-                            <label asp-for="ProjectStage" class="control-label font-weight-bold"></label>
-                            <input asp-for="ProjectStage" class="form-control form-control-lg" placeholder="Enter project stage" />
-                            <span asp-validation-for="ProjectStage" class="text-danger"></span>
-                        </div>
-                        <div class="form-group mb-3 col-md-6">
-                            <label asp-for="DeliveryStrategies" class="control-label font-weight-bold"></label>
-                            <input asp-for="DeliveryStrategies" class="form-control form-control-lg" placeholder="Enter delivery strategies" />
-                            <span asp-validation-for="DeliveryStrategies" class="text-danger"></span>
+                            <label asp-for="ContractingStrategies" class="control-label font-weight-bold"></label>
+                            <input asp-for="ContractingStrategies" class="form-control form-control-lg" placeholder="Contracting Strategies" />
+                            <span asp-validation-for="ContractingStrategies" class="text-danger"></span>
                         </div>
 
                         <div class="form-group mb-3">
-                            <label asp-for="ContractingStrategies" class="control-label font-weight-bold"></label>
-                            <input asp-for="ContractingStrategies" class="form-control form-control-lg" placeholder="Enter contracting strategies" />
-                            <span asp-validation-for="ContractingStrategies" class="text-danger"></span>
+                            <label asp-for="ProjectNature" class="form-label">Nature</label>
+                            <select asp-for="ProjectNature" class="form-control form-control-lg">
+                                <option value="">--Select--</option>
+                                <option value="greenfield">greenfield</option>
+                                <option value="brownfield">brownfield</option>
+                            </select>
+                            <span asp-validation-for="ProjectNature" class="text-danger"></span>
                         </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="ProjectType" class="form-label">Type</label>
+                            <select asp-for="ProjectType" class="form-control form-control-lg">
+                                <option value="">--Select--</option>
+                                <option value="including chemical manufacturing">including chemical manufacturing</option>
+                                <option value="stadium">stadium</option>
+                                <option value="museum">museum</option>
+                                <option value="dam">dam</option>
+                                <option value="highway">highway</option>
+                                <option value="power generation">power generation</option>
+                                <option value="water/wastewater">water/wastewater</option>
+                                <option value="consumer products manufacturing">consumer products manufacturing</option>
+                                <option value="oil refining">oil refining</option>
+                                <option value="metals refining/processing">metals refining/processing</option>
+                                <option value="oil exploration/production">oil exploration/production</option>
+                            </select>
+                            <span asp-validation-for="ProjectType" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="ProjectStage" class="form-label">Stage</label>
+                            <select asp-for="ProjectStage" class="form-control form-control-lg">
+                                <option value="">--Select--</option>
+                                <option value="ongoing">ongoing</option>
+                                <option value="including Front End planning">including Front End planning</option>
+                                <option value="Design">Design</option>
+                                <option value="Procurement">Procurement</option>
+                                <option value="Construction">Construction</option>
+                                <option value="completed">completed</option>
+                            </select>
+                            <span asp-validation-for="ProjectStage" class="text-danger"></span>
+                        </div>
+
+
+
+                        <div class="form-group mb-3">
+                            <label asp-for="DeliveryStrategies" class="form-label">Delivery Strategy</label>
+                            <select asp-for="DeliveryStrategies" class="form-control form-control-lg">
+                                <option value="">--Select--</option>
+                                <option value="Design, Bid, Build (DBB)">Design, Bid, Build (DBB)</option>
+                                <option value="Design, Build (DB)">Design, Build (DB)</option>
+                                <option value="procurement, construction (PC)">procurement, construction (PC)</option>
+                                <option value="Engineering, Procurement, Construction (EPC)">Engineering, Procurement, Construction (EPC)</option>
+                                <option value="Engineering, Procurement, Construction, Management (EPCM)">Engineering, Procurement, Construction, Management (EPCM)</option>
+                                <option value="Construction">Construction</option>
+                                <option value="Build, Own, Operate (BOO)">Build, Own, Operate (BOO)</option>
+                            </select>
+                            <span asp-validation-for="DeliveryStrategies" class="text-danger"></span>
+                        </div>
+
                         <hr />
 
                         <div class="form-group mb-3">
                             <label class="control-label font-weight-bold">Owners</label>
                             <table class="table table-bordered">
                                 <tbody id="ownersTable">
-                                    <tr>
-                                        <td><input name="Owners[0].Name" class="form-control form-control-lg" placeholder="Enter owner name" /></td>
-                                        <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
-                                    </tr>
+                                   
                                 </tbody>
                             </table>
                             <button type="button" class="btn btn-primary" onclick="addOwnerRow()">Add Owner</button>
@@ -82,13 +117,22 @@
                         <hr />
 
                         <div class="form-group mb-3">
+                            <label class="control-label font-weight-bold">Systems</label>
+                            <table class="table table-bordered" id="systemsTable">
+                                <tbody id="systemsBody">
+                                  
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-primary" onclick="addSystemRow()">Add System</button>
+                        </div>
+
+                        <hr />
+
+                        <div class="form-group mb-3">
                             <label class="control-label font-weight-bold">Scope Packages</label>
                             <table class="table table-bordered">
                                 <tbody id="scopePackagesTable">
-                                    <tr>
-                                        <td><input name="ScopePackages[0].Name" class="form-control form-control-lg" placeholder="Enter scope package name" /></td>
-                                        <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
-                                    </tr>
+                                   
                                 </tbody>
                             </table>
                             <button type="button" class="btn btn-primary" onclick="addScopePackageRow()">Add Scope Package</button>
@@ -96,260 +140,196 @@
                         <hr />
 
                         <div class="form-group mb-3">
-                            <label class="control-label font-weight-bold">Bill of Quantities (BOQ)</label>
+                            <label class="control-label font-weight-bold">Departments</label>
+                            <table class="table table-bordered" >
+                                <tbody id="departmentsTable">
+                                   
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-primary" onclick="addDepartmentRow()">Add Department</button>
+                        </div>
+
+                        <hr />
+
+                        <div class="form-group mb-3">
+                            <label class="control-label font-weight-bold">BOQs</label>
                             <table class="table table-bordered">
                                 <tbody id="boqTable">
-                                    <tr>
-                                        <td><input name="BOQs[0].Name" class="form-control form-control-lg" placeholder="Enter BOQ name" /></td>
-                                        <td><input name="BOQs[0].Quantity" class="form-control form-control-lg" placeholder="Enter quantity" /></td>
-                                        <td><input name="BOQs[0].Cost" class="form-control form-control-lg" placeholder="Enter cost" /></td>
-                                        <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
-                                    </tr>
+                                   
                                 </tbody>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><input id="grandTotalCost" class="form-control form-control-lg" readonly /></td>
+                                    <td></td>
+                                </tr>
                             </table>
                             <button type="button" class="btn btn-primary" onclick="addBOQRow()">Add BOQ</button>
                         </div>
                         <hr />
+
                         <div class="form-group mb-3">
                             <label class="control-label font-weight-bold">Activities</label>
                             <table class="table table-bordered">
-                                <tbody id="activitiesTable">
+                                <thead class="font-weight-bold">
                                     <tr>
-                                        <td><input name="Activities[0].Name" class="form-control form-control-lg" placeholder="Enter activity name" /></td>
-                                        <td><input name="Activities[0].StartDate" type="date" class="form-control form-control-lg" /></td>
-                                        <td><input name="Activities[0].EndDate" type="date" class="form-control form-control-lg" /></td>
-                                        <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Start Date</th>
+                                        <th>Finish Date</th>
+                                        <th>Actions</th>
                                     </tr>
+                                </thead>
+                                <tbody id="activitiesTable">
+                                    
                                 </tbody>
                             </table>
                             <button type="button" class="btn btn-primary" onclick="addActivityRow()">Add Activity</button>
                         </div>
-                        <hr />
-                        <div class="form-group mb-3">
-                            <label class="control-label font-weight-bold">Systems</label>
-                            <table class="table table-bordered">
-                                <tbody id="systemsTable">
-                                    <tr>
-                                        <td><input name="Systems[0].Name" class="form-control form-control-lg" placeholder="Enter name" /></td>
-                                        <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <button type="button" class="btn btn-primary" onclick="addSystemRow()">Add System</button>
-                        </div>
-                        <hr />
-                        <div class="form-group mb-3">
-                            <label class="control-label font-weight-bold">Team Manager</label>
-                            <div class="mb-3">
-                                <input name="TeamManager.Name" class="form-control form-control-lg" placeholder="Enter manager name" />
-                            </div>
-                            <div class="mb-3">
-                                <input name="TeamManager.Email" type="email" class="form-control form-control-lg" placeholder="Enter manager email" />
-                            </div>
-                            <div class="mb-3">
-                                <input name="TeamManager.Password" type="password" class="form-control form-control-lg" placeholder="Enter manager password" />
-                            </div>
-                        </div>
-                        <hr />
-                        <!-- Team Members -->
-                        <div class="form-group mb-3">
-                            <label class="control-label font-weight-bold">Team Members</label>
-                            <table class="table table-bordered">
-                                <tbody id="teamMembersTable">
-                                    <tr>
-                                        <td><input name="TeamMembers[0].Name" class="form-control form-control-lg" placeholder="Enter name" /></td>
-                                        <td><input name="TeamMembers[0].Email" type="email" class="form-control form-control-lg" placeholder="Enter email" /></td>
-                                        <td><input name="TeamMembers[0].Password" type="password" class="form-control form-control-lg" placeholder="Enter password" /></td>
-                                        <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <button type="button" class="btn btn-primary" onclick="addTeamMemberRow()">Add Team Member</button>
-                        </div>
 
-                        <div class="form-group text-center">
-                            <input type="submit" value="Create" class="btn btn-success btn-lg w-100" />
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success btn-lg">Submit</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    <div class="text-center mt-3">
-        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-    </div>
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <partial name="_ValidationScriptsPartial" />
     <script>
         function addOwnerRow() {
-            var table = document.getElementById("ownersTable");
-            var rowCount = table.rows.length;
-            var row = table.insertRow(rowCount);
-            var cell1 = row.insertCell(0);
-            var element1 = document.createElement("input");
-            element1.type = "text";
-            element1.name = "Owners[" + rowCount + "].Name";
-            element1.className = "form-control";
-            element1.placeholder = "Enter owner name";
-            cell1.appendChild(element1);
-            var cell2 = row.insertCell(1);
-            var button = document.createElement("button");
-            button.type = "button";
-            button.className = "btn btn-danger";
-            button.onclick = function () { removeRow(this) };
-            button.innerHTML = "Remove";
-            cell2.appendChild(button);
+            const rowIndex = $('#ownersTable tr').length;
+            var row = `<tr>
+                                                   <td>${rowIndex + 1}</td>
+                                                   <td><input name="Owners[${rowIndex}]" class="form-control form-control-lg" placeholder="owner name" /></td>
+                                           <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
+                                       </tr>`;
+            document.getElementById('ownersTable').insertAdjacentHTML('beforeend', row);
+        }
+
+
+        function addSystemRow() {
+            const rowIndex = $('#systemsBody tr').length;
+            var row = `<tr>
+                                                       <td>${rowIndex + 1}</td>
+                                                       <td><input name="Systems[${rowIndex}]" class="form-control form-control-lg" placeholder="system name" /></td>
+                                       <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
+                                   </tr>`;
+            document.getElementById('systemsTable').querySelector('tbody').insertAdjacentHTML('beforeend', row);
         }
 
         function addScopePackageRow() {
-            var table = document.getElementById("scopePackagesTable");
-            var rowCount = table.rows.length;
-            var row = table.insertRow(rowCount);
-            var cell1 = row.insertCell(0);
-            var element1 = document.createElement("input");
-            element1.type = "text";
-            element1.name = "ScopePackages[" + rowCount + "].Name";
-            element1.className = "form-control";
-            element1.placeholder = "Enter scope package name";
-            cell1.appendChild(element1);
-            var cell2 = row.insertCell(1);
-            var button = document.createElement("button");
-            button.type = "button";
-            button.className = "btn btn-danger";
-            button.onclick = function () { removeRow(this) };
-            button.innerHTML = "Remove";
-            cell2.appendChild(button);
-        }
-        function addSystemRow() {
-            var table = document.getElementById("systemsTable");
-            var rowCount = table.rows.length;
-            var row = table.insertRow(rowCount);
-            var cell1 = row.insertCell(0);
-            var element1 = document.createElement("input");
-            element1.type = "text";
-            element1.name = "Systems[" + rowCount + "].Name";
-            element1.className = "form-control";
-            element1.placeholder = "Enter name";
-            cell1.appendChild(element1);
-            var cell2 = row.insertCell(1);
-            var button = document.createElement("button");
-            button.type = "button";
-            button.className = "btn btn-danger";
-            button.onclick = function () { removeRow(this) };
-            button.innerHTML = "Remove";
-            cell2.appendChild(button);
+            const rowIndex = $('#scopePackagesTable tr').length;
+            var row = `<tr>
+                                                           <td>${rowIndex + 1}</td>
+                                                   <td><input name="ScopePackages[${rowIndex}].Name" class="form-control form-control-lg" placeholder="scope package name" /></td>
+                                                   <td><input name="ScopePackages[${rowIndex}].InterfaceManager.Name" class="form-control form-control-lg" placeholder="manager name" /></td>
+                                                   <td><input name="ScopePackages[${rowIndex}].InterfaceManager.Email" class="form-control form-control-lg" placeholder="email" /></td>
+                                                   <td><input name="ScopePackages[${rowIndex}].InterfaceManager.Password" class="form-control form-control-lg" placeholder="password" /></td>
+                                           <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
+                                       </tr>`;
+            document.getElementById('scopePackagesTable').insertAdjacentHTML('beforeend', row);
         }
 
+
+
         function addBOQRow() {
-            var table = document.getElementById("boqTable");
-            var rowCount = table.rows.length;
-            var row = table.insertRow(rowCount);
-            var cell1 = row.insertCell(0);
-            var element1 = document.createElement("input");
-            element1.type = "text";
-            element1.name = "BOQs[" + rowCount + "].Name";
-            element1.className = "form-control";
-            element1.placeholder = "Enter BOQ name";
-            cell1.appendChild(element1);
-            var cell2 = row.insertCell(1);
-            var element2 = document.createElement("input");
-            element2.type = "text";
-            element2.name = "BOQs[" + rowCount + "].Quantity";
-            element2.className = "form-control";
-            element2.placeholder = "Enter quantity";
-            cell2.appendChild(element2);
-            var cell3 = row.insertCell(2);
-            var element3 = document.createElement("input");
-            element3.type = "text";
-            element3.name = "BOQs[" + rowCount + "].Cost";
-            element3.className = "form-control";
-            element3.placeholder = "Enter cost";
-            cell3.appendChild(element3);
-            var cell4 = row.insertCell(3);
-            var button = document.createElement("button");
-            button.type = "button";
-            button.className = "btn btn-danger";
-            button.onclick = function () { removeRow(this) };
-            button.innerHTML = "Remove";
-            cell4.appendChild(button);
+            const rowIndex = $('#boqTable tr').length;
+            var row = `<tr>
+                                                           <td>${rowIndex + 1}</td>
+                                           <td Width="300px"><input name="BOQs[${rowIndex}].Name" class="form-control form-control-lg" placeholder="BOQ name" /></td>
+                                           <td><input name="BOQs[${rowIndex}].Quantity" class="form-control form-control-lg" placeholder="quantity" oninput="calculateTotalCost(this)" /></td>
+                                           <td><input name="BOQs[${rowIndex}].Cost" class="form-control form-control-lg" placeholder="cost" oninput="calculateTotalCost(this)" /></td>
+                                           <td><input name="BOQs[${rowIndex}].Unit" class="form-control form-control-lg" placeholder="unit" /></td>
+                                           <td Width="150px"><input name="BOQs[${rowIndex}].TotalCost" class="form-control form-control-lg" placeholder="total cost" readonly /></td>
+                                           <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
+                                       </tr>`;
+            document.getElementById('boqTable').insertAdjacentHTML('beforeend', row);
         }
 
         function addActivityRow() {
-            var table = document.getElementById("activitiesTable");
-            var rowCount = table.rows.length;
-            var row = table.insertRow(rowCount);
-            var cell1 = row.insertCell(0);
-            var element1 = document.createElement("input");
-            element1.type = "text";
-            element1.name = "Activities[" + rowCount + "].Name";
-            element1.className = "form-control";
-            element1.placeholder = "Enter activity name";
-            cell1.appendChild(element1);
-            var cell2 = row.insertCell(1);
-            var element2 = document.createElement("input");
-            element2.type = "date";
-            element2.name = "Activities[" + rowCount + "].StartDate";
-            element2.className = "form-control";
-            cell2.appendChild(element2);
-            var cell3 = row.insertCell(2);
-            var element3 = document.createElement("input");
-            element3.type = "date";
-            element3.name = "Activities[" + rowCount + "].EndDate";
-            element3.className = "form-control";
-            cell3.appendChild(element3);
-            var cell4 = row.insertCell(3);
-            var button = document.createElement("button");
-            button.type = "button";
-            button.className = "btn btn-danger";
-            button.onclick = function () { removeRow(this) };
-            button.innerHTML = "Remove";
-            cell4.appendChild(button);
+            const rowIndex = $('#activitiesTable tr').length;
+            var row = `<tr>
+                                                           <td>${rowIndex + 1}</td>
+                                                   <td><input name="Activities[${rowIndex}].Name" class="form-control form-control-lg" placeholder="activity name" /></td>
+                                                                   <td><input type="date" name="Activities[${rowIndex}].StartDate" class="form-control form-control-lg" placeholder = "Start Date"/></td>
+                                                                   <td><input type="date" name="Activities[${rowIndex}].FinishDate" class="form-control form-control-lg" placeholder = "Finish Date" /></td>
+                                           <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
+                                       </tr>`;
+            document.getElementById('activitiesTable').insertAdjacentHTML('beforeend', row);
         }
-        function addTeamMemberRow() {
-            var table = document.getElementById("teamMembersTable");
-            var rowCount = table.rows.length;
-            var row = table.insertRow(rowCount);
 
-            var cell1 = row.insertCell(0);
-            var element1 = document.createElement("input");
-            element1.type = "text";
-            element1.name = "TeamMembers[" + rowCount + "].Name";
-            element1.className = "form-control";
-            element1.placeholder = "Enter team member name";
-            cell1.appendChild(element1);
 
-            var cell2 = row.insertCell(1);
-            var element2 = document.createElement("input");
-            element2.type = "email";
-            element2.name = "TeamMembers[" + rowCount + "].Email";
-            element2.className = "form-control";
-            element2.placeholder = "Enter team member email";
-            cell2.appendChild(element2);
 
-            var cell3 = row.insertCell(2);
-            var element3 = document.createElement("input");
-            element3.type = "password";
-            element3.name = "TeamMembers[" + rowCount + "].Password";
-            element3.className = "form-control";
-            element3.placeholder = "Enter team member password";
-            cell3.appendChild(element3);
-
-            var cell4 = row.insertCell(3);
-            var button = document.createElement("button");
-            button.type = "button";
-            button.className = "btn btn-danger";
-            button.onclick = function () { removeRow(this) };
-            button.innerHTML = "Remove";
-            cell4.appendChild(button);
+        function addDepartmentRow() {
+            const rowIndex = $('#departmentsTable tr').length;
+            var row = `<tr>
+                                                   <td>${rowIndex + 1}</td>
+                                   <td><input name="Departments[${rowIndex}].Name" class="form-control form-control-lg" placeholder="department name" /></td>
+                                   <td>                           
+                                       <input name="Departments[${rowIndex}].TeamManager.Name" class="form-control form-control-lg" placeholder="manager name" />
+                                       <input name="Departments[${rowIndex}].TeamManager.Email" class="form-control form-control-lg" placeholder="email" />
+                                       <input name="Departments[${rowIndex}].TeamManager.Password" class="form-control form-control-lg" placeholder="password" />
+                                   </td>
+                                   <td>
+                                       <button type="button" class="btn btn-primary" onclick="addTeamMember(this)">Add Team Member</button>
+                                       <div class="team-members">
+                                           <!-- Team members will be dynamically added here -->
+                                       </div>
+                                   </td>
+                                   <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
+                               </tr>`;
+            document.getElementById('departmentsTable').insertAdjacentHTML('beforeend', row);
         }
+
+        function addTeamMember(button) {
+            const rowIndex = $('#departmentsTable tr').length;
+            var departmentRow = button.closest('tr');
+            var teamMembersDiv = departmentRow.querySelector('.team-members');
+
+            var memberId = teamMembersDiv.children.length + 1;
+
+            var teamMemberHtml = `<div class="form-group">
+                                                              <input name="Departments[${rowIndex - 1}].TeamMembers[${rowIndex - 1}].Name" class="form-control form-control-lg" placeholder="name" />
+                                                              <input name="Departments[${rowIndex - 1}].TeamMembers[${rowIndex - 1}].Email" class="form-control form-control-lg" placeholder="email" />
+                                                              <input name="Departments[${rowIndex - 1}].TeamMembers[${rowIndex - 1}].Password" class="form-control form-control-lg" placeholder="password" />
+                                              <button type="button" class="btn btn-danger" onclick="removeTeamMember(this)">Remove</button>
+                                          </div>`;
+
+            teamMembersDiv.insertAdjacentHTML('beforeend', teamMemberHtml);
+        }
+
+        function removeTeamMember(button) {
+            var teamMemberDiv = button.parentNode;
+            teamMemberDiv.parentNode.removeChild(teamMemberDiv);
+        }
+
 
         function removeRow(button) {
             var row = button.parentNode.parentNode;
             row.parentNode.removeChild(row);
+        }
+
+        function calculateTotalCost(input) {
+            var row = input.parentNode.parentNode;
+            var quantity = parseFloat(row.querySelector('input[name$=".Quantity"]').value) || 0;
+            var cost = parseFloat(row.querySelector('input[name$=".Cost"]').value) || 0;
+            var totalCost = quantity * cost;
+            row.querySelector('input[name$="TotalCost"]').value = totalCost.toFixed(2);
+
+            // Calculate Grand Total Cost
+            var allTotalCostInputs = document.querySelectorAll('input[name$="TotalCost"]');
+            var grandTotalCost = 0;
+            allTotalCostInputs.forEach(function (input) {
+                grandTotalCost += parseFloat(input.value) || 0;
+            });
+            document.getElementById('grandTotalCost').value = grandTotalCost.toFixed(2);
         }
     </script>
 }

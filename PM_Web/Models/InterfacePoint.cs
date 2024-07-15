@@ -1,7 +1,4 @@
-﻿
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace PM.Models
+﻿namespace PM.Models
 {
     public class InterfacePoint
     {
@@ -14,8 +11,8 @@ namespace PM.Models
         public string? System2 { get; set; }
         public string? ExtraSystem { get; set; }
         public string Category { get; set; } // Phaysical & Funcation or contractual & Organizational Or Resource Or Regulatory Or Other
-        public BOQ? BOQ { get; set; }
-        public Activity? Activity { get; set; }
+        public List<BOQ> BOQs { get; set; } = new List<BOQ>();
+        public List<Activity> Activities { get; set; }=new List<Activity>();
         public string? Responsible { get; set; }
         public string? Consultant { get; set; }
         public string? Accountable { get; set; }
@@ -25,30 +22,11 @@ namespace PM.Models
         public DateTime CreatDate { get; set; }
         public DateTime? IssueDate { get; set; }
         public DateTime? CloseDate { get; set; }
-        public List<Documentation>? Documentations { get; set; }
+        public List<Documentation>? Documentations { get; set; } = new List<Documentation>();
         public int ProjectId { get; set; }
         public Project Project { get; set; }
-        public List<Chat> chat { get; set; }
+        public List<Chat> chat { get; set; } = new List<Chat>();
+        public string Description { get; set; }
 
-
-    }
-
-    public class Documentation
-    {
-        public int Id { get; set; }
-        public string? DocumentationLink { get; set; }
-        [NotMapped]
-        public IFormFile? DocumentationFile { get; set; }
-        public string? DocumentationDescription { get; set; }
-        public int InterfacePointId { get; set; }
-    }
-
-    public class Chat
-    {
-        public int Id { get; set; }
-        public string Message { get; set; }
-        public string Sender { get; set; }
-        public DateTime Time { get; set; }
-        public int InterfacePointId { get; set; }
     }
 }

@@ -1,7 +1,31 @@
-﻿@{
+﻿@model PM.Models.ApplicationUser
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
+    <p class="display-6">Welcome, @Model.FullName</p>
+    @if(User.IsInRole("Cordinator"))
+    {
+        <p class="lead">You are a Cordinator.</p>
+    }
+    else
+    {
+        if (ViewBag.ScopePackages != null)
+        {
+            <p class="lead">You are Interface Manager Of Scope Package @ViewBag.ScopePackages.Name</p>
+        }
+        if(ViewBag.department != null)
+        {
+            if (User.IsInRole("TeamManager"))
+            {
+                <p class="lead">You are Interface Manager Of Department @ViewBag.department.Name</p>
+            }
+            else
+            {
+                <p class="lead">You are a Team Member Of Department @ViewBag.department.Name</p>
+            }
+        }
+    }
+
 </div>

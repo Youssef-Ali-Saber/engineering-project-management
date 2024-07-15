@@ -13,6 +13,10 @@ namespace PM.Data
         }
         public DbSet<ApplicationUser> Users { get; set; }
         public DbSet<Project> Projects { get; set; }
+        public DbSet<ScopePackage> ScopePackages { get; set; }
+        public DbSet<BOQ> BOQs { get; set; }
+        public DbSet<Activity> Activities { get; set; }
+        public DbSet<Department> Departments { get; set; }
         public DbSet<InterfacePoint> InterfacePoints { get; set; }
         public DbSet<Chat> Chats { get; set; }
 

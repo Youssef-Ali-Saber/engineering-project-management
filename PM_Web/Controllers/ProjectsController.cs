@@ -82,23 +82,23 @@ namespace PM.Controllers
                 DeliveryStrategies = viewModel.DeliveryStrategies,
                 ContractingStrategies = viewModel.ContractingStrategies,
                 OwnerId = ownerId,
-                Owners = viewModel.Owners.Select(s => new Owner { Name = s}).ToList(),
-                Systems = viewModel.Systems.Select(s => new _System { Name = s }).ToList(),
-                ScopePackages = viewModel.ScopePackages.Select(s => new ScopePackage { Name = s.Name, ManagerEmail = s.InterfaceManager.Email}).ToList(),
-                BOQs= viewModel.BOQs.Select(b => new BOQ
+                Owners = viewModel.Owners?.Select(s => new Owner { Name = s}).ToList(),
+                Systems = viewModel.Systems?.Select(s => new _System { Name = s }).ToList(),
+                ScopePackages = viewModel.ScopePackages?.Select(s => new ScopePackage { Name = s.Name, ManagerEmail = s.InterfaceManager.Email}).ToList(),
+                BOQs= viewModel.BOQs?.Select(b => new BOQ
                 {
                     Quantity = b.Quantity,
                     Cost = b.Cost,
                     Name = b.Name,
                     Unit = b.Unit
                 }).ToList(),
-                Activities = viewModel.Activities.Select(a => new Activity
+                Activities = viewModel.Activities?.Select(a => new Activity
                 {
                     Name = a.Name,
                     StartDate = a.StartDate,
                     EndDate = a.FinishDate
                 }).ToList(),
-                Departments = viewModel.Departments.Select(d => new Department
+                Departments = viewModel.Departments?.Select(d => new Department
                 {
                     Name = d.Name,
                     TeamManagerEmail = d.TeamManager.Email,
@@ -106,28 +106,35 @@ namespace PM.Controllers
                 }).ToList()
             };
 
-            foreach (var scopePackage in viewModel.ScopePackages)
+            if(viewModel.ScopePackages is not null)
             {
-                if (!await CreateUser(scopePackage.InterfaceManager,"TeamManager"))
+                foreach (var scopePackage in viewModel.ScopePackages)
                 {
-                    return View(viewModel);
-                }
-            }
-
-            foreach (var department in viewModel.Departments)
-            {
-                foreach (var teamMember in department.TeamMembers)
-                {
-                    if (!await CreateUser(teamMember, "TeamMember"))
+                    if (!await CreateUser(scopePackage.InterfaceManager, "Contractor"))
                     {
                         return View(viewModel);
                     }
                 }
-                if (!await CreateUser(department.TeamManager, "TeamManager"))
+            }
+            
+            if(viewModel.Departments is not null)
+            {
+                foreach (var department in viewModel.Departments)
                 {
-                    return View(viewModel);
+                    foreach (var teamMember in department.TeamMembers)
+                    {
+                        if (!await CreateUser(teamMember, "TeamMember"))
+                        {
+                            return View(viewModel);
+                        }
+                    }
+                    if (!await CreateUser(department.TeamManager, "TeamManager"))
+                    {
+                        return View(viewModel);
+                    }
                 }
             }
+            
 
 
 

@@ -1,0 +1,13 @@
+﻿@model List<PM.Models.Notification>
+
+<h2>Notifications</h2>
+
+<div id="notifications">
+    @foreach (var notification in Model)
+    {
+        <div class="notification read">
+            <p>@notification.Message</p>
+            <span>@notification.CreatedAt</span>
+        </div>
+    }
+</div>

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PM.Models;
+using System.Reflection.Emit;
 
 namespace PM.Data
 {
@@ -11,41 +12,49 @@ namespace PM.Data
             : base(options)
         {
         }
-        public DbSet<ApplicationUser> Users { get; set; }
-        public DbSet<Project> Projects { get; set; }
-        public DbSet<ScopePackage> ScopePackages { get; set; }
-        public DbSet<BOQ> BOQs { get; set; }
-        public DbSet<Activity> Activities { get; set; }
-        public DbSet<Department> Departments { get; set; }
-        public DbSet<InterfacePoint> InterfacePoints { get; set; }
-        public DbSet<Chat> Chats { get; set; }
+        public virtual DbSet<ApplicationUser> Users { get; set; }
+        public virtual DbSet<Project> Projects { get; set; }
+        public virtual DbSet<ScopePackage> ScopePackages { get; set; }
+        public virtual DbSet<BOQ> BOQs { get; set; }
+        public virtual DbSet<Activity> Activities { get; set; }
+        public virtual DbSet<Department> Departments { get; set; }
+        public virtual DbSet<InterfacePoint> InterfacePoints { get; set; }
+        public virtual DbSet<Chat> Chats { get; set; }
+        public virtual DbSet<Notification> Notifications { get; set; }
+        public virtual DbSet<InterfaceAgreement> InterfaceAgreements { get; set; }
+        public virtual DbSet<Documentation> Documentations { get; set; }
 
-        override protected void OnModelCreating(ModelBuilder builder)
+        override protected void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(builder);
+            base.OnModelCreating(modelBuilder);
 
-            builder.Entity<IdentityRole>().HasData(
-                new IdentityRole
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Name = "Cordinator",
-                    NormalizedName = "CORDINATOR",
-                    ConcurrencyStamp = Guid.NewGuid().ToString()
-                },
-                new IdentityRole
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Name = "TeamMember",
-                    NormalizedName = "TEAMMEMBER",
-                    ConcurrencyStamp = Guid.NewGuid().ToString()
-                },
-                new IdentityRole
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Name = "TeamManager",
-                    NormalizedName = "TEAMMANAGER",
-                    ConcurrencyStamp = Guid.NewGuid().ToString()
-                });
+            modelBuilder.Entity<InterfacePoint>()
+                .HasMany(ip => ip.Chat)
+                .WithOne()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<InterfacePoint>()
+                .HasMany(ip => ip.Documentations)
+                .WithOne()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<InterfacePoint>()
+                .HasMany(ip => ip.BOQs)
+                .WithOne();
+
+            modelBuilder.Entity<InterfacePoint>()
+                .HasMany(ip => ip.Activities)
+                .WithOne();
+
+            modelBuilder.Entity<InterfaceAgreement>()
+                .HasMany(ip => ip.Chat)
+                .WithOne()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<InterfaceAgreement>()
+                .HasMany(ip => ip.Documentations)
+                .WithOne()
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
     

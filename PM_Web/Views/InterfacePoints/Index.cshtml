@@ -8,22 +8,82 @@
 
 <div class="container mt-4">
     <div class="row mb-3">
+        <div class="col">
+            <hr />
+            <form id="filterForm" asp-action="Index" method="get" class="form-inline">
+                <div class="btn-group mb-2" role="group" aria-label="Scope">
+                    <button type="button" class="btn btn-outline-primary" data-filter="scope" data-value="" onclick="applyFilter('scope', '')">All Scopes</button>
+                    <button type="button" class="btn btn-outline-primary" data-filter="scope" data-value="Intra" onclick="applyFilter('scope', 'Intra')">Intra (@(ViewBag.ScopeCounts.ContainsKey("Intra") ? ViewBag.ScopeCounts["Intra"] : 0))</button>
+                    <button type="button" class="btn btn-outline-primary" data-filter="scope" data-value="Inter" onclick="applyFilter('scope', 'Inter')">Inter (@(ViewBag.ScopeCounts.ContainsKey("Inter") ? ViewBag.ScopeCounts["Inter"] : 0))</button>
+                    <button type="button" class="btn btn-outline-primary" data-filter="scope" data-value="Extra" onclick="applyFilter('scope', 'Extra')">Extra (@(ViewBag.ScopeCounts.ContainsKey("Extra") ? ViewBag.ScopeCounts["Extra"] : 0))</button>
+                </div>
+                <hr />
+                <div class="btn-group mb-2" role="group" aria-label="Nature">
+                    <button type="button" class="btn btn-outline-primary" data-filter="nature" data-value="" onclick="applyFilter('nature', '')">All Natures</button>
+                    <button type="button" class="btn btn-outline-primary" data-filter="nature" data-value="Hard" onclick="applyFilter('nature', 'Hard')">Hard (@(ViewBag.NatureCounts.ContainsKey("Hard") ? ViewBag.NatureCounts["Hard"] : 0))</button>
+                    <button type="button" class="btn btn-outline-primary" data-filter="nature" data-value="Soft" onclick="applyFilter('nature', 'Soft')">Soft (@(ViewBag.NatureCounts.ContainsKey("Soft") ? ViewBag.NatureCounts["Soft"] : 0))</button>
+                </div>
+                <hr />
+                <div class="btn-group mb-2" role="group" aria-label="Category">
+                    <button type="button" class="btn btn-outline-primary" data-filter="category" data-value="" onclick="applyFilter('category', '')">All Categories</button>
+                    <button type="button" class="btn btn-outline-primary" data-filter="category" data-value="Physical & Functional" onclick="applyFilter('category', 'Physical & Functional')">Physical & Functional (@(ViewBag.CategoryCounts.ContainsKey("Physical & Functional") ? ViewBag.CategoryCounts["Physical & Functional"] : 0))</button>
+                    <button type="button" class="btn btn-outline-primary" data-filter="category" data-value="Contractual & Organizational" onclick="applyFilter('category', 'Contractual & Organizational')">Contractual & Organizational (@(ViewBag.CategoryCounts.ContainsKey("Contractual & Organizational") ? ViewBag.CategoryCounts["Contractual & Organizational"] : 0))</button>
+                    <button type="button" class="btn btn-outline-primary" data-filter="category" data-value="Resource" onclick="applyFilter('category', 'Resource')">Resource (@(ViewBag.CategoryCounts.ContainsKey("Resource") ? ViewBag.CategoryCounts["Resource"] : 0))</button>
+                    <button type="button" class="btn btn-outline-primary" data-filter="category" data-value="Regulatory" onclick="applyFilter('category', 'Regulatory')">Regulatory (@(ViewBag.CategoryCounts.ContainsKey("Regulatory") ? ViewBag.CategoryCounts["Regulatory"] : 0))</button>
+                    <button type="button" class="btn btn-outline-primary" data-filter="category" data-value="Other" onclick="applyFilter('category', 'Other')">Other (@(ViewBag.CategoryCounts.ContainsKey("Other") ? ViewBag.CategoryCounts["Other"] : 0))</button>
+                </div>
+
+                
+                @if (User.IsInRole("Cordinator"))
+                {
+                    <hr />
+                    <div class="btn-group mb-2" role="group" aria-label="ScopePackage">
+                        <button type="button" class="btn btn-outline-primary" data-filter="scopePackage" data-value="" onclick="applyFilter('scopePackage', '')">All ScopePackages</button>
+                        @foreach (var item in ViewBag.ScopePackageList)
+                        {
+                            <button type="button" class="btn btn-outline-primary" data-filter="scopePackage" data-value="@item" onclick="applyFilter('scopePackage', '@item')">@item </button>
+                        }
+                    </div>
+                }
+                @if (User.IsInRole("Contractor") || User.IsInRole("ContractorTeamMember") || User.IsInRole("Cordinator"))
+                {
+                    <hr />
+                    <div class="btn-group mb-2" role="group" aria-label="Role">
+                        <button type="button" class="btn btn-outline-primary" data-filter="role" data-value="" onclick="applyFilter('role', '')">All Roles</button>
+                        <button type="button" class="btn btn-outline-primary" data-filter="role" data-value="Responsible" onclick="applyFilter('role', 'Responsible')">Responsible (@(ViewBag.Responsible ?? 0))</button>
+                        <button type="button" class="btn btn-outline-primary" data-filter="role" data-value="Accountable" onclick="applyFilter('role', 'Accountable')">Accountable (@(ViewBag.Accountable ?? 0))</button>
+                        <button type="button" class="btn btn-outline-primary" data-filter="role" data-value="Consultant" onclick="applyFilter('role', 'Consultant')">Consultant (@(ViewBag.Consultant ?? 0))</button>
+                        <button type="button" class="btn btn-outline-primary" data-filter="role" data-value="Informed" onclick="applyFilter('role', 'Informed')">Informed (@(ViewBag.Informed ?? 0))</button>
+                        <button type="button" class="btn btn-outline-primary" data-filter="role" data-value="Supported" onclick="applyFilter('role', 'Supported')">Supported (@(ViewBag.Supported ?? 0))</button>
+                    </div>
+                }
+            </form>
+            <hr />
+        </div>
+    </div>
+
+    <div class="row">
         <div class="col text-right">
-            @if (User.IsInRole("TeamMember"))
+            @if (User.IsInRole("TeamMember") || User.IsInRole("Contractor"))
             {
                 <a asp-action="Create" class="btn btn-success"><i class="fa fa-plus-circle"></i> Create New Interface Point</a>
             }
         </div>
     </div>
 
-    <div class="row">
+    <div class="row mt-3">
         <div class="col">
             <table id="interfacePointsTable" class="table table-hover table-bordered text-center">
                 <thead class="thead-dark">
                     <tr>
+                        <th>Project Name</th>
                         <th>ID</th>
                         <th>@Html.DisplayNameFor(model => model.Category)</th>
                         <th>@Html.DisplayNameFor(model => model.Status)</th>
+                        @if (User.IsInRole("ContractorTeamMember") || User.IsInRole("Contractor") || User.IsInRole("Cordinator"))
+                        {
+                            <th>Role</th>
+                        }
                         <th width="200px">Actions</th>
                     </tr>
                 </thead>
@@ -31,34 +91,75 @@
                     @foreach (var item in Model)
                     {
                         <tr>
+                            <td>@Html.DisplayFor(modelItem => item.Project.ProjectName)</td>
                             <td>IP_@Html.DisplayFor(modelItem => item.Id)</td>
                             <td>@Html.DisplayFor(modelItem => item.Category)</td>
                             <td>@Html.DisplayFor(modelItem => item.Status)</td>
+                            @if (User.IsInRole("ContractorTeamMember") || User.IsInRole("Contractor") || User.IsInRole("Cordinator"))
+                            {
+                                <td>
+                                    @if (ViewBag.InterfacePointsAccountable != null && ViewBag.InterfacePointsAccountable.Contains(item))
+                                    {
+                                        <span>A</span>
+                                    }
+                                    @if (ViewBag.InterfacePointsResponsible != null && ViewBag.InterfacePointsResponsible.Contains(item))
+                                    {
+                                        <span>R</span>
+                                    }
+                                    @if (ViewBag.InterfacePointsConsultant != null && ViewBag.InterfacePointsConsultant.Contains(item))
+                                    {
+                                        <span>C</span>
+                                    }
+                                    @if (ViewBag.InterfacePointsInformed != null && ViewBag.InterfacePointsInformed.Contains(item))
+                                    {
+                                        <span>I</span>
+                                    }
+                                    @if (ViewBag.InterfacePointsSupported != null && ViewBag.InterfacePointsSupported.Contains(item))
+                                    {
+                                        <span>S</span>
+                                    }
+                                    @if (ViewBag.InterfacePointsAccountable == null && ViewBag.InterfaceAgreementsResponsible == null && ViewBag.InterfaceAgreementsConsultant == null && ViewBag.InterfaceAgreementsInformed == null && ViewBag.InterfaceAgreementsSupported == null)
+                                    {
+                                        <span>
+                                            N/A
+                                        </span>
+                                    }
+                                </td>
+                            }
                             <td>
-
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-dark btn-sm mr-1"><i class="fa fa-edit"></i> Edit</a>
-                                <a asp-action="Index" asp-controller="Chats" asp-route-id="@item.Id" class="btn btn-secondary btn-sm mr-1">Chat</a>
+                                @if (User.IsInRole("TeamMember"))
+                                {
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-dark btn-sm mr-1"><i class="fa fa-edit"></i> Edit</a>
+                                }
                                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm mr-1"><i class="fa fa-eye"></i> View</a>
-                                <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline-block" onsubmit="return confirm('Are you sure you want to delete this interface point?');">
-                                    <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete</button>
-                                </form>
-                                
+                                @if (User.IsInRole("ContractorTeamMember") && ViewBag.InterfacePointsAccountable != null && ViewBag.InterfacePointsAccountable.Contains(item))
+                                {
+                                    <a asp-action="Create" asp-controller="InterfaceAgreements" asp-route-Id="@item.Id" class="d-inline-block btn btn-outline-dark btn-sm mr-1">Add_IA</a>
+                                }
+                                @if (!(User.IsInRole("ContractorTeamMember") || User.IsInRole("Contractor")))
+                                {
+                                    <a asp-action="ChatsOfInterfacePoint" asp-controller="Chats" asp-route-id="@item.Id" class="btn btn-secondary btn-sm mr-1">Chat</a>
+                                    <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline-block" onsubmit="return confirm('Are you sure you want to delete this interface point?');">
+                                        <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete</button>
+                                    </form>
+                                }
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
+            <br />
+            <hr />
+            <br />
         </div>
     </div>
 </div>
 
 @section Scripts {
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css" />
 
     <script>
@@ -72,6 +173,26 @@
                 "autoWidth": false,
                 "responsive": true
             });
+
+            applyButtonStyles();
+
+            function applyButtonStyles() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const filters = ['scope', 'nature', 'category', 'role', 'scopePackage' ,'boq' ,'activity'];
+                filters.forEach(filter => {
+                    const value = urlParams.get(filter);
+                    if (value) {
+                        $(`button[data-filter="${filter}"]`).removeClass('btn-primary').addClass('btn-outline-primary');
+                        $(`button[data-filter="${filter}"][data-value="${value}"]`).removeClass('btn-outline-primary').addClass('btn-primary');
+                    }
+                });
+            }
         });
+
+        function applyFilter(filter, value) {
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set(filter, value);
+            window.location.search = urlParams.toString();
+        }
     </script>
 }

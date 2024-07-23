@@ -1,0 +1,122 @@
+﻿@model PM.Models.ViewModels.InterfaceAgreementViewModel
+
+@{
+    ViewData["Title"] = "Create Interface Agreement";
+}
+
+<div class="container">
+    <h2 class="text-center mt-4">@ViewData["Title"]</h2>
+
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8">
+            <div class="card shadow border-0">
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post" enctype="multipart/form-data" class="row needs-validation" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <input type="hidden" asp-for="InterfacePointId" />
+
+                        <div class="form-group mb-3 col-md-6">
+                            <label asp-for="Title" class="control-label font-weight-bold"></label>
+                            <input asp-for="Title" class="form-control form-control-lg" placeholder="Title" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mb-3 col-md-6">
+                            <label asp-for="Description" class="control-label font-weight-bold"></label>
+                            <textarea asp-for="Description" class="form-control form-control-lg" placeholder="Description"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3 col-md-6">
+                            <label asp-for="NeedDate" class="control-label font-weight-bold"></label>
+                            <input asp-for="NeedDate" type="date" class="form-control form-control-lg" placeholder="NeedDate" />
+                            <span asp-validation-for="NeedDate" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3" id="System2Container">
+                            <label asp-for="System" class="control-label font-weight-bold">System</label>
+                            <select asp-for="System" class="form-control form-control-lg">
+                                <option value="">--Select--</option>
+                                @foreach (var item in ViewBag.Systems)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                            <span asp-validation-for="System" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mb-3" id="System2Container">
+                            <label asp-for="Discipline" class="control-label font-weight-bold">Discipline</label>
+                            <select asp-for="Discipline" class="form-control form-control-lg">
+                                <option value="">--Select--</option>
+                                @foreach (var item in ViewBag.ScopePackages)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                            <span asp-validation-for="Discipline" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label">Documentations</label>
+                            <table class="table table-bordered">
+                                <tbody id="documentationTable">
+                                    <tr>
+                                        <td><input name="Documentations[0].DocumentationFile" type="file" class="form-control form-control-lg" /></td>
+                                        <td><input name="Documentations[0].DocumentationDescription" class="form-control form-control-lg" placeholder="Enter description" /></td>
+                                        <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-primary" onclick="addDocumentationRow()">Add Documentation</button>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success btn-lg">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+
+
+
+        function addDocumentationRow() {
+            const table = document.getElementById('documentationTable');
+            const rowCount = table.rows.length;
+            const row = table.insertRow(rowCount);
+
+            const cell1 = row.insertCell(0);
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.name = `Documentations[${rowCount}].DocumentationFile`;
+            fileInput.className = 'form-control form-control-lg';
+            cell1.appendChild(fileInput);
+
+            const cell2 = row.insertCell(1);
+            const descriptionInput = document.createElement('input');
+            descriptionInput.type = 'text';
+            descriptionInput.name = `Documentations[${rowCount}].DocumentationDescription`;
+            descriptionInput.className = 'form-control form-control-lg';
+            descriptionInput.placeholder = 'Enter documentation description';
+            cell2.appendChild(descriptionInput);
+
+            const cell3 = row.insertCell(2);
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'btn btn-danger';
+            removeButton.onclick = function () { removeRow(this); };
+            removeButton.textContent = 'Remove';
+            cell3.appendChild(removeButton);
+        }
+
+        function removeRow(button) {
+            const row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+    </script>
+}

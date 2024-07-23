@@ -549,3 +549,16 @@ bg-success {
         background-color: #578553;
         border-color: #578553;
     }
+
+.notification {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+    .notification.unread {
+        background-color: #f9f9f9;
+    }
+
+    .notification.read {
+        background-color: #fff;
+    }

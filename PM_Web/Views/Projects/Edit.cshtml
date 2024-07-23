@@ -296,9 +296,9 @@
             var memberId = teamMembersDiv.children.length + 1;
 
             var teamMemberHtml = `<div class="form-group">
-                                                                      <input name="Departments[${rowIndex - 1}].TeamMembers[${rowIndex - 1}].Name" class="form-control form-control-lg" placeholder="name" />
-                                                                      <input name="Departments[${rowIndex - 1}].TeamMembers[${rowIndex - 1}].Email" class="form-control form-control-lg" placeholder="email" />
-                                                                      <input name="Departments[${rowIndex - 1}].TeamMembers[${rowIndex - 1}].Password" class="form-control form-control-lg" placeholder="password" />
+                                                      <input name="Departments[${rowIndex - 1}].TeamMembers[${memberId}].Name" class="form-control form-control-lg" placeholder="name" />
+                                                      <input name="Departments[${rowIndex - 1}].TeamMembers[${memberId}].Email" class="form-control form-control-lg" placeholder="email" />
+                                                      <input name="Departments[${rowIndex - 1}].TeamMembers[${memberId}].Password" class="form-control form-control-lg" placeholder="password" />
                                                       <button type="button" class="btn btn-danger" onclick="removeTeamMember(this)">Remove</button>
                                                   </div>`;
 

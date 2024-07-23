@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using PM.Data;
 using PM.Models;
 using System.Security.Claims;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PM.Controllers
 {
@@ -45,7 +46,9 @@ namespace PM.Controllers
             {
                 ViewBag.Department = department;
             }
-            return View(user);
+
+            
+                return View(user);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

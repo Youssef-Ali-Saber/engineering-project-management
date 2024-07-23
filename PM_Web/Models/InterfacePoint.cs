@@ -25,7 +25,7 @@
         public List<Documentation>? Documentations { get; set; } = new List<Documentation>();
         public int ProjectId { get; set; }
         public Project Project { get; set; }
-        public List<Chat> chat { get; set; } = new List<Chat>();
+        public List<Chat> Chat { get; set; } = new List<Chat>();
         public string Description { get; set; }
 
     }

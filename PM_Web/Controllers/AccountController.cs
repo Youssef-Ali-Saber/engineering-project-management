@@ -2,19 +2,28 @@
 using Microsoft.AspNetCore.Mvc;
 using PM.Models.ViewModels;
 using PM.Models;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
+using PM.Data;
+using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 
 namespace PM.Controllers
 {
     public class AccountController : Controller
     {
+        
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        public AccountController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, SignInManager<ApplicationUser> signInManager)
+        private readonly ApplicationDbContext _context;
+        public AccountController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
+            SignInManager<ApplicationUser> signInManager, ApplicationDbContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
+            _context = context;
         }
 
         [HttpGet]
@@ -134,6 +143,86 @@ namespace PM.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
+
+        [HttpGet]
+        public IActionResult AddMember()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddMember(TeamMember teamMember)
+        {
+            if (ModelState.IsValid)
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = await _userManager.FindByIdAsync(userId);
+                if(await CreateUser(teamMember, "ContractorTeamMember"))
+                {
+                    var scopePackage =  _context.ScopePackages.FirstOrDefault(f=>f.ManagerEmail == user.Email);
+                    scopePackage.TeamEmails.Add(teamMember.Email);
+                    _context.Update(scopePackage);
+                    await _context.SaveChangesAsync();
+                    return View();
+                }
+            } 
+            return View(teamMember);
+        }
+
+        private async Task<bool> CreateUser(TeamMember teamMember, string role)
+        {
+            var user = await _userManager.FindByEmailAsync(teamMember.Email);
+            if (user == null)
+            {
+                var userTeamMember = new ApplicationUser
+                {
+                    FullName = teamMember.Name,
+                    UserName = teamMember.Email,
+                    Email = teamMember.Email
+                };
+                var resultOfCreate = await _userManager.CreateAsync(userTeamMember, teamMember.Password);
+                if (resultOfCreate.Succeeded)
+                {
+                    var resultRole = await _userManager.AddToRoleAsync(userTeamMember, role);
+                    if (!resultRole.Succeeded)
+                    {
+                        var resultDelete = await _userManager.DeleteAsync(userTeamMember);
+                        if (resultDelete.Succeeded)
+                        {
+                            ModelState.AddModelError(string.Empty, "Failed to create user");
+                        }
+                        else
+                        {
+                            foreach (var error in resultDelete.Errors)
+                            {
+                                ModelState.AddModelError(string.Empty, error.Description);
+                            }
+                        }
+                        foreach (var error in resultRole.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                        return false;
+                    }
+                    return true;
+                }
+                else
+                {
+                    foreach (var error in resultOfCreate.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                    return false;
+                }
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "User already exists");
+                return false;
+            }
+
+
+        }
+
     }
 
 }

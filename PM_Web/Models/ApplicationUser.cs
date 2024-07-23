@@ -7,5 +7,6 @@ namespace PM.Models
         public string FullName { get; set; }
         public string? Title { get; set; }
         public string? Organization { get; set; }
+        public List<Notification> Notifications { get; set; }   
     }
 }

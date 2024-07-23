@@ -11,14 +11,29 @@ using PM.Data;
 namespace PM.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240715183330_initi")]
-    partial class initi
+    [Migration("20240723084554_initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.7");
+
+            modelBuilder.Entity("ApplicationUserNotification", b =>
+                {
+                    b.Property<int>("NotificationsId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UsersId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("NotificationsId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("ApplicationUserNotification");
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -44,29 +59,6 @@ namespace PM.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "89e7b7a9-8ec3-4a46-ad4b-6d39a6948692",
-                            ConcurrencyStamp = "f82da172-5d3a-498f-abac-973b1110c6ac",
-                            Name = "Cordinator",
-                            NormalizedName = "CORDINATOR"
-                        },
-                        new
-                        {
-                            Id = "566d06b6-35ad-4311-952c-2c14a117e0c0",
-                            ConcurrencyStamp = "92cda1aa-66ab-4e04-bc63-84c18fcab050",
-                            Name = "TeamMember",
-                            NormalizedName = "TEAMMEMBER"
-                        },
-                        new
-                        {
-                            Id = "967d8ac8-e830-4607-8ce9-abb5752856f4",
-                            ConcurrencyStamp = "7f3b932a-afb2-4582-a040-3669773820d9",
-                            Name = "TeamManager",
-                            NormalizedName = "TEAMMANAGER"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -317,7 +309,10 @@ namespace PM.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("InterfacePointId")
+                    b.Property<int?>("InterfaceAgreementId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("InterfacePointId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Message")
@@ -332,6 +327,8 @@ namespace PM.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("InterfaceAgreementId");
 
                     b.HasIndex("InterfacePointId");
 
@@ -378,14 +375,71 @@ namespace PM.Migrations
                     b.Property<string>("DocumentationLink")
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("InterfaceAgreementId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("InterfacePointId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InterfaceAgreementId");
+
+                    b.HasIndex("InterfacePointId");
+
+                    b.ToTable("Documentations");
+                });
+
+            modelBuilder.Entity("PM.Models.InterfaceAgreement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("AccountableTeamMemberEmail")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("CloseDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Discipline")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("InterfacePointId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("IssueDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("NeedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("System")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("InterfacePointId");
 
-                    b.ToTable("Documentation");
+                    b.ToTable("InterfaceAgreements");
                 });
 
             modelBuilder.Entity("PM.Models.InterfacePoint", b =>
@@ -462,6 +516,24 @@ namespace PM.Migrations
                     b.HasIndex("ProjectId");
 
                     b.ToTable("InterfacePoints");
+                });
+
+            modelBuilder.Entity("PM.Models.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("PM.Models.Owner", b =>
@@ -552,6 +624,10 @@ namespace PM.Migrations
                     b.Property<int>("ProjectId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("TeamEmails")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ProjectId");
@@ -577,6 +653,21 @@ namespace PM.Migrations
                     b.HasIndex("projectId");
 
                     b.ToTable("_System");
+                });
+
+            modelBuilder.Entity("ApplicationUserNotification", b =>
+                {
+                    b.HasOne("PM.Models.Notification", null)
+                        .WithMany()
+                        .HasForeignKey("NotificationsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PM.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -662,11 +753,15 @@ namespace PM.Migrations
 
             modelBuilder.Entity("PM.Models.Chat", b =>
                 {
+                    b.HasOne("PM.Models.InterfaceAgreement", null)
+                        .WithMany("Chat")
+                        .HasForeignKey("InterfaceAgreementId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("PM.Models.InterfacePoint", null)
-                        .WithMany("chat")
+                        .WithMany("Chat")
                         .HasForeignKey("InterfacePointId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("PM.Models.Department", b =>
@@ -682,11 +777,26 @@ namespace PM.Migrations
 
             modelBuilder.Entity("PM.Models.Documentation", b =>
                 {
+                    b.HasOne("PM.Models.InterfaceAgreement", null)
+                        .WithMany("Documentations")
+                        .HasForeignKey("InterfaceAgreementId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("PM.Models.InterfacePoint", null)
                         .WithMany("Documentations")
                         .HasForeignKey("InterfacePointId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("PM.Models.InterfaceAgreement", b =>
+                {
+                    b.HasOne("PM.Models.InterfacePoint", "InterfacePoint")
+                        .WithMany()
+                        .HasForeignKey("InterfacePointId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("InterfacePoint");
                 });
 
             modelBuilder.Entity("PM.Models.InterfacePoint", b =>
@@ -740,15 +850,22 @@ namespace PM.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("PM.Models.InterfaceAgreement", b =>
+                {
+                    b.Navigation("Chat");
+
+                    b.Navigation("Documentations");
+                });
+
             modelBuilder.Entity("PM.Models.InterfacePoint", b =>
                 {
                     b.Navigation("Activities");
 
                     b.Navigation("BOQs");
 
-                    b.Navigation("Documentations");
+                    b.Navigation("Chat");
 
-                    b.Navigation("chat");
+                    b.Navigation("Documentations");
                 });
 
             modelBuilder.Entity("PM.Models.Project", b =>

@@ -1,14 +1,11 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
-
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
 namespace PM.Migrations
 {
     /// <inheritdoc />
-    public partial class initi : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -53,6 +50,20 @@ namespace PM.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Message = table.Column<string>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -190,6 +201,30 @@ namespace PM.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ApplicationUserNotification",
+                columns: table => new
+                {
+                    NotificationsId = table.Column<int>(type: "INTEGER", nullable: false),
+                    UsersId = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ApplicationUserNotification", x => new { x.NotificationsId, x.UsersId });
+                    table.ForeignKey(
+                        name: "FK_ApplicationUserNotification_AspNetUsers_UsersId",
+                        column: x => x.UsersId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ApplicationUserNotification_Notifications_NotificationsId",
+                        column: x => x.NotificationsId,
+                        principalTable: "Notifications",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "_System",
                 columns: table => new
                 {
@@ -296,6 +331,7 @@ namespace PM.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     ManagerEmail = table.Column<string>(type: "TEXT", nullable: false),
+                    TeamEmails = table.Column<string>(type: "TEXT", nullable: false),
                     ProjectId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -367,6 +403,35 @@ namespace PM.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "InterfaceAgreements",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Title = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: false),
+                    Status = table.Column<string>(type: "TEXT", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IssueDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    CloseDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    NeedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    AccountableTeamMemberEmail = table.Column<string>(type: "TEXT", nullable: false),
+                    System = table.Column<string>(type: "TEXT", nullable: false),
+                    Discipline = table.Column<string>(type: "TEXT", nullable: false),
+                    InterfacePointId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InterfaceAgreements", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_InterfaceAgreements_InterfacePoints_InterfacePointId",
+                        column: x => x.InterfacePointId,
+                        principalTable: "InterfacePoints",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Chats",
                 columns: table => new
                 {
@@ -375,11 +440,18 @@ namespace PM.Migrations
                     Message = table.Column<string>(type: "TEXT", nullable: false),
                     Sender = table.Column<string>(type: "TEXT", nullable: false),
                     Time = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    InterfacePointId = table.Column<int>(type: "INTEGER", nullable: false)
+                    InterfacePointId = table.Column<int>(type: "INTEGER", nullable: true),
+                    InterfaceAgreementId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Chats", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Chats_InterfaceAgreements_InterfaceAgreementId",
+                        column: x => x.InterfaceAgreementId,
+                        principalTable: "InterfaceAgreements",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Chats_InterfacePoints_InterfacePointId",
                         column: x => x.InterfacePointId,
@@ -389,34 +461,31 @@ namespace PM.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Documentation",
+                name: "Documentations",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     DocumentationLink = table.Column<string>(type: "TEXT", nullable: true),
                     DocumentationDescription = table.Column<string>(type: "TEXT", nullable: true),
-                    InterfacePointId = table.Column<int>(type: "INTEGER", nullable: false)
+                    InterfacePointId = table.Column<int>(type: "INTEGER", nullable: true),
+                    InterfaceAgreementId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Documentation", x => x.Id);
+                    table.PrimaryKey("PK_Documentations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Documentation_InterfacePoints_InterfacePointId",
+                        name: "FK_Documentations_InterfaceAgreements_InterfaceAgreementId",
+                        column: x => x.InterfaceAgreementId,
+                        principalTable: "InterfaceAgreements",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Documentations_InterfacePoints_InterfacePointId",
                         column: x => x.InterfacePointId,
                         principalTable: "InterfacePoints",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.InsertData(
-                table: "AspNetRoles",
-                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[,]
-                {
-                    { "566d06b6-35ad-4311-952c-2c14a117e0c0", "92cda1aa-66ab-4e04-bc63-84c18fcab050", "TeamMember", "TEAMMEMBER" },
-                    { "89e7b7a9-8ec3-4a46-ad4b-6d39a6948692", "f82da172-5d3a-498f-abac-973b1110c6ac", "Cordinator", "CORDINATOR" },
-                    { "967d8ac8-e830-4607-8ce9-abb5752856f4", "7f3b932a-afb2-4582-a040-3669773820d9", "TeamManager", "TEAMMANAGER" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -433,6 +502,11 @@ namespace PM.Migrations
                 name: "IX_Activities_ProjectId",
                 table: "Activities",
                 column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApplicationUserNotification_UsersId",
+                table: "ApplicationUserNotification",
+                column: "UsersId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -482,6 +556,11 @@ namespace PM.Migrations
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Chats_InterfaceAgreementId",
+                table: "Chats",
+                column: "InterfaceAgreementId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Chats_InterfacePointId",
                 table: "Chats",
                 column: "InterfacePointId");
@@ -492,8 +571,18 @@ namespace PM.Migrations
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Documentation_InterfacePointId",
-                table: "Documentation",
+                name: "IX_Documentations_InterfaceAgreementId",
+                table: "Documentations",
+                column: "InterfaceAgreementId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Documentations_InterfacePointId",
+                table: "Documentations",
+                column: "InterfacePointId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InterfaceAgreements_InterfacePointId",
+                table: "InterfaceAgreements",
                 column: "InterfacePointId");
 
             migrationBuilder.CreateIndex(
@@ -527,6 +616,9 @@ namespace PM.Migrations
                 name: "Activities");
 
             migrationBuilder.DropTable(
+                name: "ApplicationUserNotification");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
@@ -551,7 +643,7 @@ namespace PM.Migrations
                 name: "Departments");
 
             migrationBuilder.DropTable(
-                name: "Documentation");
+                name: "Documentations");
 
             migrationBuilder.DropTable(
                 name: "Owner");
@@ -560,7 +652,13 @@ namespace PM.Migrations
                 name: "ScopePackages");
 
             migrationBuilder.DropTable(
+                name: "Notifications");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "InterfaceAgreements");
 
             migrationBuilder.DropTable(
                 name: "InterfacePoints");

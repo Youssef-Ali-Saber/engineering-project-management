@@ -171,35 +171,6 @@
                             </div>
                         </form>
                     }
-
-                    <div class="text-center mt-4">
-                        @if (User.IsInRole("TeamManager"))
-                        {
-                            <form asp-action="Issue" method="post" class="d-inline">
-                                <input type="hidden" asp-for="Id" />
-                                <input type="submit" value="Issue" class="btn btn-primary btn-lg" />
-                            </form>
-                        }
-
-                        @if (!User.IsInRole("TeamMember"))
-                        {
-                            <form asp-action="ChangeStatus" method="post" class="d-inline">
-                                <input type="hidden" asp-for="Id" />
-                                <select name="status" class="btn btn-warning btn-lg">
-                                    <option>--Select Status--</option>
-                                    @if (User.IsInRole("TeamManager"))
-                                    {
-                                        <option value="Pending">Pending</option>
-                                    }
-                                    @if (User.IsInRole("Cordinator"))
-                                    {
-                                        <option value="Approved">Approved</option>
-                                    }
-                                </select>
-                                <input type="submit" value="Change Status" class="btn btn-warning btn-lg" />
-                            </form>
-                        }
-                    </div>
                 </div>
             </div>
         </div>

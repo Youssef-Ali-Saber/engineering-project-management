@@ -10,6 +10,7 @@ namespace PM.Models
         [NotMapped]
         public IFormFile? DocumentationFile { get; set; }
         public string? DocumentationDescription { get; set; }
-        public int InterfacePointId { get; set; }
+        public int? InterfacePointId { get; set; }
+        public int? InterfaceAgreementId { get; set; }
     }
 }

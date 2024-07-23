@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Details";
+    int i = 0;
 }
 
 <h2 class="text-center mt-4">@ViewData["Title"]</h2>
@@ -61,31 +62,31 @@
                             <p class="form-control-static">@Model.Accountable</p>
                         </div>
                         <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">Accountable:</label>
+                            <label class="form-label">Consultant:</label>
                             <p class="form-control-static">@Model.Consultant</p>
                         </div>
                         <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">Accountable:</label>
+                            <label class="form-label">Informed:</label>
                             <p class="form-control-static">@Model.Informed</p>
                         </div>
                         <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">Accountable:</label>
+                            <label class="form-label">Responsible:</label>
                             <p class="form-control-static">@Model.Responsible</p>
                         </div>
                         <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">Accountable:</label>
+                            <label class="form-label">Supported:</label>
                             <p class="form-control-static">@Model.Supported</p>
                         </div>
                         <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">Accountable:</label>
+                            <label class="form-label">CreatDate:</label>
                             <p class="form-control-static">@Model.CreatDate.ToString("G")</p>
                         </div>
                         <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">Accountable:</label>
+                            <label class="form-label">IssueDate:</label>
                             <p class="form-control-static">@Model.IssueDate?.ToString("G")</p>
                         </div>
                         <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">Accountable:</label>
+                            <label class="form-label">CloseDate:</label>
                             <p class="form-control-static">@Model.CloseDate?.ToString("G")</p>
                         </div>
                         <hr />
@@ -111,7 +112,25 @@
                                 }
                             </select>
                         </div>
-
+                        <div class="form-group mb-3">
+                            <label class="control-label font-weight-bold">Documentations:</label>
+                            <br />
+                            <br />
+                            <br />
+                            @foreach (var documentation in Model.Documentations ?? new List<Documentation>())
+                            {
+                                i ++;
+                                <a href="@documentation.DocumentationLink">Link @i</a>
+                                <span>@documentation.DocumentationDescription</span>
+                                <br />
+                            }
+                        </div>
+                        @if (User.IsInRole("Cordinator")&&Model.IssueDate == null)
+                        {
+                            <a asp-action="Issue" asp-route-id="@Model.Id" class="btn btn-secondary btn-sm">
+                                Issue
+                            </a>
+                        }
                         <div class="form-group">
                             <a asp-action="Index" class="btn btn-secondary btn-lg ml-2">Back to List</a>
                         </div>

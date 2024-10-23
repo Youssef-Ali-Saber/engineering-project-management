@@ -417,6 +417,9 @@ namespace PM.Migrations
                     b.Property<DateTime?>("IssueDate")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("ModifiedDates")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("NeedDate")
                         .HasColumnType("TEXT");
 
@@ -424,7 +427,11 @@ namespace PM.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("System")
+                    b.Property<string>("System1")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("System2")
                         .IsRequired()
                         .HasColumnType("TEXT");
 

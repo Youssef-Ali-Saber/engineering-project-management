@@ -52,7 +52,8 @@
             <table id="interfacePointsTable" class="table table-hover table-bordered text-center">
                 <thead class="thead-dark">
                     <tr>
-                        <th>InterfacePoint</th>
+                        <th>Interface Agreement</th>
+                        <th>Interface Point</th>
                         <th>@Html.DisplayNameFor(model => model.Title)</th>
                         <th>@Html.DisplayNameFor(model => model.Status)</th>
                         <th>Remaining Days</th>
@@ -67,6 +68,7 @@
                     @foreach (var item in Model)
                     {
                         <tr>
+                            <td>IA_@Html.DisplayFor(modelItem => item.Id)</td>
                             <td>IP_@Html.DisplayFor(modelItem => item.InterfacePointId)</td>
                             <td>@Html.DisplayFor(modelItem => item.Title)</td>
                             <td>@Html.DisplayFor(modelItem => item.Status)</td>
@@ -115,21 +117,22 @@
                                 </td>
                             }
                             <td>
-                                @if (User.IsInRole("ContractorTeamMember") && ViewBag.userInterfaceAgreementsAccountable != null && ViewBag.userInterfaceAgreementsAccountable.Contains(item))
+
+                                @if ((User.IsInRole("ContractorTeamMember") || User.IsInRole("Contractor")) && ViewBag.userInterfaceAgreementsConsultant != null && ViewBag.userInterfaceAgreementsConsultant.Contains(item))
+                                {
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-dark btn-sm mr-1"><i class="fa fa-edit"></i> Edit</a>
+                                }
+
+                                @if (((User.IsInRole("ContractorTeamMember") || User.IsInRole("Contractor")) && ViewBag.userInterfaceAgreementsAccountable != null && ViewBag.userInterfaceAgreementsAccountable.Contains(item)) || User.IsInRole("Cordinator"))
                                 {
                                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-dark btn-sm mr-1"><i class="fa fa-edit"></i> Edit</a>
                                     <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline-block" onsubmit="return confirm('Are you sure you want to delete this interface Agreement?');">
                                         <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete</button>
                                     </form>
                                 }
+
                                 <a asp-action="ChatsOfInterfaceAgreement" asp-controller="Chats" asp-route-id="@item.Id" class="btn btn-secondary btn-sm mr-1">Chat</a>
                                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm mr-1"><i class="fa fa-eye"></i> View</a>
-                                @if (User.IsInRole("Contractor") && ViewBag.userInterfaceAgreementsAccountable != null && ViewBag.userInterfaceAgreementsAccountable.Contains(item))
-                                {
-                                    <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline-block" onsubmit="return confirm('Are you sure you want to delete this interface Agreement?');">
-                                        <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete</button>
-                                    </form>
-                                }
                             </td>
                         </tr>
                     }

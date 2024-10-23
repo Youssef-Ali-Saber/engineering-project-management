@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace PM.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -415,8 +416,10 @@ namespace PM.Migrations
                     IssueDate = table.Column<DateTime>(type: "TEXT", nullable: true),
                     CloseDate = table.Column<DateTime>(type: "TEXT", nullable: true),
                     NeedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    ModifiedDates = table.Column<string>(type: "TEXT", nullable: true),
                     AccountableTeamMemberEmail = table.Column<string>(type: "TEXT", nullable: false),
-                    System = table.Column<string>(type: "TEXT", nullable: false),
+                    System1 = table.Column<string>(type: "TEXT", nullable: false),
+                    System2 = table.Column<string>(type: "TEXT", nullable: false),
                     Discipline = table.Column<string>(type: "TEXT", nullable: false),
                     InterfacePointId = table.Column<int>(type: "INTEGER", nullable: false)
                 },

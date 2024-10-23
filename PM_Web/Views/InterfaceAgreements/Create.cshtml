@@ -34,15 +34,26 @@
                         </div>
 
                         <div class="form-group mb-3" id="System2Container">
-                            <label asp-for="System" class="control-label font-weight-bold">System</label>
-                            <select asp-for="System" class="form-control form-control-lg">
+                            <label asp-for="System1" class="control-label font-weight-bold">System 1</label>
+                            <select asp-for="System1" class="form-control form-control-lg">
                                 <option value="">--Select--</option>
                                 @foreach (var item in ViewBag.Systems)
                                 {
                                     <option value="@item.Value">@item.Text</option>
                                 }
                             </select>
-                            <span asp-validation-for="System" class="text-danger"></span>
+                            <span asp-validation-for="System1" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mb-3" id="System2Container">
+                            <label asp-for="System2" class="control-label font-weight-bold">System 2</label>
+                            <select asp-for="System2" class="form-control form-control-lg">
+                                <option value="">--Select--</option>
+                                @foreach (var item in ViewBag.Systems)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                            <span asp-validation-for="System2" class="text-danger"></span>
                         </div>
                         <div class="form-group mb-3" id="System2Container">
                             <label asp-for="Discipline" class="control-label font-weight-bold">Discipline</label>

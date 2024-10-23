@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using PM.Data;
 using PM.Models;
 using PM.Models.ViewModels;
-using System.Data;
 using System.Security.Claims;
 
 namespace PM.Controllers
@@ -32,30 +31,19 @@ namespace PM.Controllers
 
             foreach (var interfaceAgreement in interfaceAgreements)
             {
-                if (interfaceAgreement.CloseDate == null && interfaceAgreement.NeedDate < DateTime.Now)
+                switch (interfaceAgreement.CloseDate)
                 {
-                    interfaceAgreement.Status = "Overriding";
-                    _context.Update(interfaceAgreement);
-                }
-                else if (interfaceAgreement.CloseDate == null && interfaceAgreement.IssueDate == null)
-                {
-                    interfaceAgreement.Status = "NotIssued";
-                    _context.Update(interfaceAgreement);
-                }
-                else if (interfaceAgreement.CloseDate == null && DateTime.Now - DateTime.Now < interfaceAgreement.NeedDate - DateTime.Now && interfaceAgreement.NeedDate - DateTime.Now <= DateTime.Now.AddDays(30) - DateTime.Now)
-                {
-                    interfaceAgreement.Status = $"ClosedToDeadline";
-                    _context.Update(interfaceAgreement);
-                }
-                else if (interfaceAgreement.CloseDate == null && interfaceAgreement.IssueDate != null)
-                {
-                    interfaceAgreement.Status = "InProgress";
-                    _context.Update(interfaceAgreement);
-                }
-                else if (interfaceAgreement.CloseDate != null && interfaceAgreement.Status != "Closed")
-                {
-                    interfaceAgreement.Status = "Closed";
-                    _context.Update(interfaceAgreement);
+                    case null when interfaceAgreement.Status == "SentToCordinator":
+                        break;
+                    case null when interfaceAgreement.NeedDate < DateTime.Now:
+                        interfaceAgreement.Status = "Overriding";
+                        _context.Update(interfaceAgreement);
+                        break;
+                    case null when DateTime.Now - DateTime.Now < interfaceAgreement.NeedDate - DateTime.Now && interfaceAgreement.NeedDate - DateTime.Now <= DateTime.Now.AddDays(30) - DateTime.Now:
+                        interfaceAgreement.Status = $"ClosedToDeadline";
+                        _context.Update(interfaceAgreement);
+                        break;
+
                 }
             }
 
@@ -184,16 +172,16 @@ namespace PM.Controllers
                 return NotFound();
             }
 
-
-
             return View(interfaceAgreement);
         }
 
         // GET: InterfaceAgreements/Create
         public IActionResult Create(int Id)
         {
-            var viewModel = new InterfaceAgreementViewModel();
-            viewModel.InterfacePointId = Id;
+            var viewModel = new InterfaceAgreementViewModel
+            {
+                InterfacePointId = Id
+            };
             var project = _context.InterfacePoints.Include(ip => ip.Project).Include(p => p.Project.Systems).Include(p => p.Project.ScopePackages).FirstOrDefault(ip => ip.Id == Id)?.Project;
             if (project?.Systems != null)
                 ViewBag.Systems = project.Systems.Select(sp => new SelectListItem { Text = sp.Name, Value = sp.Name }).ToList();
@@ -219,10 +207,11 @@ namespace PM.Controllers
                 Description = viewModel.Description,
                 Title = viewModel.Title,
                 InterfacePointId = viewModel.InterfacePointId,
-                System = viewModel.System,
-                Status = "InProgress",
+                System1 = viewModel.System1,
+                System2 = viewModel.System2,
+                Status = "NotIssued",
                 NeedDate = viewModel.NeedDate,
-                Discipline=viewModel.Discipline
+                Discipline = viewModel.Discipline
             };
 
             if (viewModel.Documentations != null)
@@ -257,20 +246,38 @@ namespace PM.Controllers
                 return NotFound();
             }
 
-            var interfaceAgreement = await _context.InterfaceAgreements.FindAsync(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _context.Users.FindAsync(userId);
+
+            var interfaceAgreement = await _context.InterfaceAgreements
+                .Include(x => x.InterfacePoint)
+                .FirstOrDefaultAsync(x => x.Id == id);
             if (interfaceAgreement == null)
             {
                 return NotFound();
             }
+
+            ViewBag.isAccountable = _context.ScopePackages.Any(x =>
+                x.ManagerEmail == interfaceAgreement.InterfacePoint.Accountable &&
+                (x.ManagerEmail == user.Email || x.TeamEmails.Contains(user.Email)));
+
+            ViewBag.isConsultant = _context.ScopePackages.Any(x =>
+                x.ManagerEmail == interfaceAgreement.InterfacePoint.Consultant &&
+                (x.ManagerEmail == user.Email || x.TeamEmails.Contains(user.Email)));
+
             var interfaceAgreementViewModel = new InterfaceAgreementViewModel
             {
                 Description = interfaceAgreement.Description,
                 Title = interfaceAgreement.Title,
-                System = interfaceAgreement.System,
+                System1 = interfaceAgreement.System1,
+                System2 = interfaceAgreement.System2,
                 NeedDate = interfaceAgreement.NeedDate,
                 InterfacePointId = interfaceAgreement.InterfacePointId,
                 Id = interfaceAgreement.Id,
-                Discipline=interfaceAgreement.Discipline
+                Discipline = interfaceAgreement.Discipline,
+                ModifiedDates = interfaceAgreement.ModifiedDates,
+                CloseDate = interfaceAgreement.CloseDate,
+                Status = interfaceAgreement.Status
             };
 
             var project = _context.InterfacePoints.Include(ip => ip.Project).Include(p => p.Project.Systems).Include(p => p.Project.ScopePackages).FirstOrDefault(ip => ip.Id == interfaceAgreement.InterfacePointId)?.Project;
@@ -297,7 +304,8 @@ namespace PM.Controllers
                 }
                 interfaceAgreement.Description = viewModel.Description;
                 interfaceAgreement.Title = viewModel.Title;
-                interfaceAgreement.System = viewModel.System;
+                interfaceAgreement.System2 = viewModel.System1;
+                interfaceAgreement.System2 = viewModel.System2;
                 interfaceAgreement.NeedDate = viewModel.NeedDate;
                 interfaceAgreement.Discipline = viewModel.Discipline;
 
@@ -318,6 +326,10 @@ namespace PM.Controllers
                         interfaceAgreement.Documentations.Add(documentation);
                     }
                 }
+                if (viewModel.ModifiedDates != null)
+                {
+                    interfaceAgreement.ModifiedDates = viewModel.ModifiedDates;
+                }
                 _context.InterfaceAgreements.Update(interfaceAgreement);
                 await _context.SaveChangesAsync();
             }
@@ -327,14 +339,11 @@ namespace PM.Controllers
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+
+                throw;
             }
             return RedirectToAction(nameof(Index));
         }
-
 
         // POST: InterfaceAgreements/Delete/5
         [HttpPost, ActionName("Delete")]
@@ -351,17 +360,17 @@ namespace PM.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
         public async Task<IActionResult> Close(int id)
         {
             var interfaceAgreement = await _context.InterfaceAgreements.Include(i => i.InterfacePoint).FirstOrDefaultAsync(ia => ia.Id == id);
-            bool isAllClosed = true;
+            var isAllClosed = true;
             if (interfaceAgreement == null)
             {
                 return NotFound();
             }
 
-            interfaceAgreement.CloseDate = DateTime.Now;
+            interfaceAgreement.CloseDate = interfaceAgreement.ModifiedDates?.Last() ?? interfaceAgreement.NeedDate;
+
             interfaceAgreement.Status = "Closed";
             foreach (var interfaceAgreement0 in _context.InterfaceAgreements.Where(ip => ip.InterfacePointId == interfaceAgreement.InterfacePoint.Id).ToList())
             {
@@ -378,6 +387,23 @@ namespace PM.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index), new { id });
         }
+
+        public async Task<IActionResult> SendToCordinator(int id)
+        {
+            var interfaceAgreement = await _context.InterfaceAgreements.Include(i => i.InterfacePoint).FirstOrDefaultAsync(ia => ia.Id == id);
+
+            if (interfaceAgreement == null)
+            {
+                return NotFound();
+            }
+
+            interfaceAgreement.Status = "SentToCordinator";
+
+            _context.Update(interfaceAgreement);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index), new { id });
+        }
+
         public async Task<IActionResult> Issue(int id)
         {
             var interfaceAgreement = await _context.InterfaceAgreements.FindAsync(id);
@@ -392,7 +418,6 @@ namespace PM.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index), new { id });
         }
-
 
         private bool InterfaceAgreementExists(int id)
         {

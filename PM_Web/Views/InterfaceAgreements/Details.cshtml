@@ -59,8 +59,12 @@
                             <p class="form-control-static">@Model.InterfacePoint.Consultant</p>
                         </div>
                         <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">System:</label>
-                            <p class="form-control-static">@Model.System</p>
+                            <label class="form-label">System 1:</label>
+                            <p class="form-control-static">@Model.System1</p>
+                        </div>
+                        <div class="form-group mb-3 col-md-6">
+                            <label class="form-label">System 2:</label>
+                            <p class="form-control-static">@Model.System2</p>
                         </div>
                         <div class="form-group mb-3 col-md-6">
                             <label class="form-label">Discipline:</label>
@@ -71,6 +75,10 @@
                             <p class="form-control-static">@Model.CreatedDate.ToString("G")</p>
                         </div>
                         <div class="form-group mb-3 col-md-6">
+                            <label class="form-label">NeedDate:</label>
+                            <p class="form-control-static">@Model.NeedDate.ToString("G")</p>
+                        </div>
+                        <div class="form-group mb-3 col-md-6">
                             <label class="form-label">IssueDate:</label>
                             <p class="form-control-static">@Model.IssueDate?.ToString("G")</p>
                         </div>
@@ -78,15 +86,20 @@
                             <label class="form-label">CloseDate:</label>
                             <p class="form-control-static">@Model.CloseDate?.ToString("G")</p>
                         </div>
-                        <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">NeedDate:</label>
-                            <p class="form-control-static">@Model.NeedDate.ToString("G")</p>
-                        </div>
 
+                        <div class="form-group mb-3 col-md-6">
+                            <label class="control-label font-weight-bold">Modified Dates:</label>
+                            <br />
+                            @foreach (var modifiedDate in Model.ModifiedDates ?? [])
+                            {
+                                <p class="form-control-static">@modifiedDate.ToString("G")</p>
+                            }
+                        </div>
+                        
                         <div class="form-group mb-3">
                             <label class="control-label font-weight-bold">Documentations:</label>
                             <br />
-                            @foreach (var documentation in Model.Documentations ?? new List<Documentation>())
+                            @foreach (var documentation in Model.Documentations ?? [])
                             {
                                 i ++;
                                 <a href="@documentation.DocumentationLink">Link @i</a>
@@ -94,17 +107,23 @@
                                 <br />
                             }
                         </div>
+
                         @if (User.IsInRole("Contractor") && Model.InterfacePoint.Accountable == User.Identity?.Name && Model.IssueDate == null)
                         {
                             <a asp-action="Issue" asp-route-id="@Model.Id" class="btn btn-primary btn-sm mr-1"> Issue</a>
                             <br />
                         }
-                        <br />
-                        <br />
-                        @if (User.IsInRole("Contractor") && Model.InterfacePoint.Accountable == User.Identity?.Name && Model.CloseDate == null)
+                        @if (User.IsInRole("Contractor") && (Model.InterfacePoint.Accountable == User.Identity?.Name || Model.InterfacePoint.Consultant == User.Identity?.Name) && !Model.CloseDate.HasValue && Model.IssueDate.HasValue && Model.Status != "SentToCordinator")
                         {
                             <a asp-action="Close" asp-route-id="@Model.Id" class="btn btn-dark btn-sm mr-1"> Close</a>
                             <br />
+                            <a asp-action="SendToCordinator" asp-route-id="@Model.Id" class="btn btn-dark btn-sm mr-1">SendToCordinator</a>
+                            <br />
+                        }
+                        @if (User.IsInRole("Cordinator") && Model.Status == "SentToCordinator")
+                        {
+                            <a asp-action="Close" asp-route-id="@Model.Id" class="btn btn-dark btn-sm mr-1"> Close</a>
+                            <br/>
                         }
                         <a asp-action="Index" class="btn btn-secondary btn-sm mr-1">Back to List</a>
                     </form>

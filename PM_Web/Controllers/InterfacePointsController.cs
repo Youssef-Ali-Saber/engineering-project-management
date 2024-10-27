@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using PM.Data;
 using PM.Models;
@@ -29,7 +28,8 @@ namespace PM.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _context.Users.FindAsync(userId);
-            var interfacePoints = _context.InterfacePoints.Include(i => i.Project).ToList();
+            var interfacePoints = _context.InterfacePoints.Include(i => i.Project)
+                .Include(interfacePoint => interfacePoint.BOQs).Include(interfacePoint => interfacePoint.Activities).ToList();
 
 
             // Filters
@@ -41,9 +41,9 @@ namespace PM.Controllers
                 interfacePoints = interfacePoints.Where(m => m.Category == category).ToList();
             if (!string.IsNullOrEmpty(scopePackage))
             {
-                interfacePoints = interfacePoints.Where(m => scopePackage == m.Accountable ||scopePackage == m.Supported ||scopePackage == m.Informed||scopePackage == m.Consultant || scopePackage ==m.Responsible).ToList();
-                
-                if(role != null)
+                interfacePoints = interfacePoints.Where(m => scopePackage == m.Accountable || scopePackage == m.Supported || scopePackage == m.Informed || scopePackage == m.Consultant || scopePackage == m.Responsible).ToList();
+
+                if (role != null)
                 {
 
                     if (role == "Responsible")
@@ -72,38 +72,72 @@ namespace PM.Controllers
 
             }
             if (!string.IsNullOrEmpty(boq))
-                interfacePoints = interfacePoints.Where(m => m.BOQs.Any(b=>b.Id.ToString() == boq)).ToList();
+                interfacePoints = interfacePoints.Where(m => m.BOQs.Any(b => b.Id.ToString() == boq)).ToList();
             if (!string.IsNullOrEmpty(activity))
                 interfacePoints = interfacePoints.Where(m => m.Activities.Any(v => v.Id.ToString() == activity)).ToList();
 
 
             // Calculate counts for filter options based on filtered list
-           
 
 
-            ViewBag.ScopePackageList = _context.ScopePackages.Select(s=>s.ManagerEmail).ToList();
-            ViewBag.BOQList = _context.BOQs.Select(s=>s.Name).ToList();
+
+            ViewBag.ScopePackageList = _context.ScopePackages.Select(s => s.ManagerEmail).ToList();
+            ViewBag.BOQList = _context.BOQs.Select(s => s.Name).ToList();
             ViewBag.ActivityList = _context.Activities.Select(s => s.Name).ToList();
 
 
             // User-specific filtering logic
             if (User.IsInRole("Cordinator"))
             {
-                interfacePoints = interfacePoints.Where(m => m.Project.OwnerId == userId).ToList();
+                interfacePoints = interfacePoints.Where(m => m.Project.OwnerId == userId && m.Status != "Holding").ToList();
 
             }
-            else if (User.IsInRole("TeamManager") || User.IsInRole("TeamMember"))
+            else if (User.IsInRole("TeamManager"))
             {
                 var project = _context.Projects.Include(inc => inc.ScopePackages).Include(inc => inc.Departments)
                     .FirstOrDefault(m => m.Departments.Any(m => m.TeamMembersEmails.Any(tm => tm == user.Email))
-                                         || m.Departments.Any(m => m.TeamManagerEmail == user.Email)
-                                         || m.ScopePackages.Any(m => m.ManagerEmail == user.Email));
+                                         || m.Departments.Any(m => m.TeamManagerEmail == user.Email));
 
-                interfacePoints = interfacePoints.Where(m => m.ProjectId == project.Id).ToList();
+                var dep = project.Departments.FirstOrDefault(x =>
+                    x.TeamManagerEmail == user.Email || x.TeamMembersEmails.Contains(user.Email));
+
+                var members = _context.Users.Where(x => dep.TeamMembersEmails.Contains(x.Email)).ToList();
+
+                interfacePoints = interfacePoints.Where(m =>
+                    m.ProjectId == project.Id &&
+                    (m.CreatorId == user.Id || members.Select(x => x.Id).Contains(m.CreatorId) || m.DepIds.Contains(dep.Id))).ToList();
+
+                ViewBag.ourInterfacePoints = interfacePoints.Where(m =>
+                    m.ProjectId == project.Id &&
+                    (m.CreatorId == user.Id || members.Select(x => x.Id).Contains(m.CreatorId) || m.DepIds.Contains(dep.Id))).ToList();
+            }
+            else if (User.IsInRole("TeamMember"))
+            {
+                var project = _context.Projects.Include(inc => inc.ScopePackages).Include(inc => inc.Departments)
+                    .FirstOrDefault(m => m.Departments.Any(m => m.TeamMembersEmails.Any(tm => tm == user.Email))
+                                         || m.Departments.Any(m => m.TeamManagerEmail == user.Email));
+
+                var dep = project.Departments.FirstOrDefault(x =>
+                    x.TeamManagerEmail == user.Email || x.TeamMembersEmails.Contains(user.Email));
+
+                var manager = await _context.Users.FirstOrDefaultAsync(x => x.Email == dep.TeamManagerEmail);
+
+                var members = _context.Users.Where(x => dep.TeamMembersEmails.Contains(x.Email)).ToList();
+
+                interfacePoints = interfacePoints.Where(m =>
+                    m.ProjectId == project.Id &&
+                    ((m.CreatorId == user.Id || members.Select(x => x.Id).Contains(m.CreatorId)) || m.CreatorId == manager.Email || m.DepIds.Contains(dep.Id))).ToList();
+
             }
             else if (User.IsInRole("Contractor"))
             {
-                interfacePoints = interfacePoints.Where(m => (m.Responsible == user.Email || m.Accountable == user.Email || m.Consultant == user.Email || m.Informed == user.Email || m.Supported == user.Email) && m.IssueDate != null).ToList();
+                var scopePackage0 = _context.ScopePackages.Include(inc => inc.Project).FirstOrDefault(m => m.ManagerEmail == user.Email);
+
+                var members = _context.Users.Where(u => scopePackage0.TeamEmails.Contains(u.Email)).ToList();
+
+                interfacePoints = interfacePoints.Where(m => ((m.Responsible == user.Email || m.Accountable == user.Email || m.Consultant == user.Email || m.Informed == user.Email || m.Supported == user.Email) && m.IssueDate != null) || m.CreatorId == userId || members.Select(x => x.Id).Contains(m.CreatorId)).ToList();
+
+                ViewBag.ourInterfacePoints = interfacePoints.Where(m => m.CreatorId == userId || members.Select(x => x.Id).Contains(m.CreatorId)).ToList();
 
                 if (role == "Responsible")
                     interfacePoints = interfacePoints.Where(m => m.Responsible == user.Email).ToList();
@@ -128,17 +162,25 @@ namespace PM.Controllers
                 ViewBag.InterfacePointsConsultant = interfacePoints.Where(m => m.Consultant == user.Email).ToList();
                 ViewBag.InterfacePointsInformed = interfacePoints.Where(m => m.Informed == user.Email).ToList();
                 ViewBag.InterfacePointsSupported = interfacePoints.Where(m => m.Supported == user.Email).ToList();
+
             }
             else if (User.IsInRole("ContractorTeamMember"))
             {
                 var scopePackage0 = _context.ScopePackages.Include(inc => inc.Project).FirstOrDefault(m => m.TeamEmails.Contains(user.Email));
+
+                var manager = _context.Users.FirstOrDefault(u => u.Email == scopePackage0.ManagerEmail);
+
+                var members = _context.Users.Where(u => scopePackage0.TeamEmails.Contains(u.Email)).ToList();
+
 
                 if (scopePackage0 == null)
                 {
                     return NotFound();
                 }
 
-                interfacePoints = interfacePoints.Where(m => (m.Responsible == scopePackage0.ManagerEmail || m.Accountable == scopePackage0.ManagerEmail || m.Consultant == scopePackage0.ManagerEmail || m.Informed == scopePackage0.ManagerEmail || m.Supported == scopePackage0.ManagerEmail) && m.IssueDate != null).ToList();
+                interfacePoints = interfacePoints.Where(m => ((m.Responsible == scopePackage0.ManagerEmail || m.Accountable == scopePackage0.ManagerEmail || m.Consultant == scopePackage0.ManagerEmail || m.Informed == scopePackage0.ManagerEmail || m.Supported == scopePackage0.ManagerEmail) && m.IssueDate != null) || m.CreatorId == manager.Id || m.CreatorId == userId || members.Select(x => x.Id).Contains(m.CreatorId)).ToList();
+
+                ViewBag.ourInterfacePoints = interfacePoints.Where(m => m.CreatorId == manager.Id || m.CreatorId == userId || members.Select(x => x.Id).Contains(m.CreatorId)).ToList();
 
                 if (role == "Responsible")
                     interfacePoints = interfacePoints.Where(m => m.Responsible == scopePackage0.ManagerEmail).ToList();
@@ -178,8 +220,6 @@ namespace PM.Controllers
         }
 
 
-
-
         // GET: InterfacePoints/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -189,27 +229,34 @@ namespace PM.Controllers
             }
 
             var interfacePoint = await _context.InterfacePoints
-                .Include(i => i.Project)
+                .Include(i => i.Project).Include(i => i.Project.Departments)
                 .Include(i => i.BOQs)
                 .Include(i => i.Activities)
                 .Include(i => i.Documentations)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (interfacePoint == null)
             {
                 return NotFound();
             }
 
+            var project = await _context.Projects.Include(inc => inc.Departments).FirstOrDefaultAsync(f => f.Id == interfacePoint.ProjectId);
+
+            var dep = project.Departments.Where(i => !interfacePoint.DepIds.Contains(i.Id)).Select(x => new SelectListItem(text: x.Name, value: x.Id.ToString())).ToList();
+
+            if (dep.Count > 0)
+                ViewBag.dep = dep;
+
             return View(interfacePoint);
         }
 
         // GET: InterfacePoints/Create
-        [Authorize(Roles = "TeamMember,Contractor")]
         public IActionResult Create()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _context.Users.FirstOrDefault(u => u.Id == userId);
             var project = _context.Projects.Include(inc => inc.ScopePackages).Include(inc => inc.BOQs).Include(inc => inc.Activities).Include(i => i.Systems)
-                .Include(i => i.Departments).FirstOrDefault(m => m.Departments.Any(n => n.TeamMembersEmails.Any(tm => tm == user.Email))||m.ScopePackages.Any(sp=>sp.ManagerEmail == user.Email));
+                .Include(i => i.Departments).FirstOrDefault(m => m.Departments.Any(n => n.TeamMembersEmails.Any(tm => tm == user.Email)) || m.ScopePackages.Any(sp => sp.ManagerEmail == user.Email) || m.ScopePackages.Any(sp => sp.TeamEmails.Contains(user.Email)));
 
 
             if (project != null)
@@ -231,12 +278,11 @@ namespace PM.Controllers
         // POST: InterfacePoints/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "TeamMember,Contractor")]
         public async Task<IActionResult> Create(InterFacePointViewModel viewModel)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _context.Users.FirstOrDefault(u => u.Id == userId);
-            var project = _context.Projects.Include(inc => inc.ScopePackages).Include(inc => inc.BOQs).Include(inc => inc.Activities).Include(inc => inc.Departments).FirstOrDefault(m => m.Departments.Any(m => m.TeamMembersEmails.Any(tm => tm == user.Email))||m.ScopePackages.Any(sp=>sp.ManagerEmail == user.Email));
+            var project = _context.Projects.Include(inc => inc.ScopePackages).Include(inc => inc.BOQs).Include(inc => inc.Activities).Include(inc => inc.Departments).FirstOrDefault(m => m.Departments.Any(m => m.TeamMembersEmails.Any(tm => tm == user.Email)) || m.ScopePackages.Any(sp => sp.ManagerEmail == user.Email) || m.ScopePackages.Any(sp => sp.TeamEmails.Contains(user.Email)));
 
 
             var interfacePoint = new InterfacePoint
@@ -257,7 +303,8 @@ namespace PM.Controllers
                 CreatDate = DateTime.Now,
                 ProjectId = project.Id,
                 Description = viewModel.Description,
-                Status = "Pending"
+                Status = "Holding",
+                CreatorId = userId,
             };
 
             if (viewModel.Documentations != null)
@@ -277,7 +324,7 @@ namespace PM.Controllers
                     interfacePoint.Documentations.Add(documentation);
                 }
             }
-            if(viewModel.BOQs!= null)
+            if (viewModel.BOQs != null)
             {
                 foreach (var boq in viewModel.BOQs)
                 {
@@ -286,7 +333,7 @@ namespace PM.Controllers
                         interfacePoint.BOQs.Add(BOQTable);
                 }
             }
-            if(viewModel.Activities != null)
+            if (viewModel.Activities != null)
             {
                 foreach (var activity in viewModel.Activities)
                 {
@@ -310,7 +357,7 @@ namespace PM.Controllers
 
             var department = _context.Departments.FirstOrDefault(n => n.TeamMembersEmails.Contains(user.Email));
             if (department != null)
-                _notificationService.CreateNotification($"{user.FullName} From Department {department.Name} Created New Interface Point IP_{interfacePoint.Id}",usersToNotify);
+                _notificationService.CreateNotification($"{user.FullName} From Department {department.Name} Created New Interface Point IP_{interfacePoint.Id}", usersToNotify);
 
             var scopePackage = project.ScopePackages.FirstOrDefault(n => n.ManagerEmail == user.Email);
             if (scopePackage != null)
@@ -354,12 +401,12 @@ namespace PM.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _context.Users.FirstOrDefault(u => u.Id == userId);
             var project = _context.Projects.Include(inc => inc.ScopePackages).Include(inc => inc.BOQs).Include(inc => inc.Activities).Include(i => i.Systems)
-                .Include(i => i.Departments).FirstOrDefault(m => m.Departments.Any(m => m.TeamMembersEmails.Any(tm => tm == user.Email)));
+                .Include(i => i.Departments).FirstOrDefault(m => m.Id == interfacePoint.ProjectId);
 
             if (project != null)
             {
                 if (project.ScopePackages != null)
-                    ViewBag.ScopePackages = project.ScopePackages.Select(sp => new SelectListItem { Text = sp.Name, Value = sp.Name }).ToList();
+                    ViewBag.ScopePackages = project.ScopePackages.Select(sp => new SelectListItem { Text = sp.Name, Value = sp.ManagerEmail }).ToList();
                 if (project.Systems != null)
                     ViewBag.Systems = project.Systems.Select(sp => new SelectListItem { Text = sp.Name, Value = sp.Name }).ToList();
                 if (project.BOQs != null)
@@ -386,9 +433,11 @@ namespace PM.Controllers
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var user = _context.Users.FirstOrDefault(u => u.Id == userId);
-                var project = _context.Projects.Include(inc => inc.Departments).Include(inc => inc.ScopePackages).FirstOrDefault(m => m.Departments.Any(m => m.TeamMembersEmails.Any(tm => tm == user.Email)));
 
-                var interfacePoint = _context.InterfacePoints.Include(m=>m.Documentations).FirstOrDefault(m => m.Id == id);
+                var interfacePoint = _context.InterfacePoints.Include(m => m.Documentations).FirstOrDefault(m => m.Id == id);
+
+                var project = _context.Projects.Include(inc => inc.Departments).Include(inc => inc.ScopePackages).FirstOrDefault(m => m.Id == interfacePoint.ProjectId);
+
                 interfacePoint.Nature = viewModel.Nature;
                 interfacePoint.Scope = viewModel.Scope;
                 interfacePoint.ScopePackage1 = viewModel.ScopePackage1;
@@ -405,6 +454,8 @@ namespace PM.Controllers
                 interfacePoint.ProjectId = project.Id;
                 interfacePoint.Description = viewModel.Description;
 
+                interfacePoint.IssueDate = null;
+                interfacePoint.Status = "Holding";
 
                 if (viewModel.Documentations != null)
                 {
@@ -456,9 +507,10 @@ namespace PM.Controllers
                     project.Departments.Any(n => n.TeamMembersEmails.Contains(m.Email) || n.TeamManagerEmail == m.Email) ||
                     project.ScopePackages.Any(a => a.ManagerEmail == m.Email)).ToList();
 
-                _notificationService.CreateNotification($"{user.FullName} From Department {_context.Departments.FirstOrDefault(n => n.TeamMembersEmails.Contains(user.Email)).Name} Edited Interface Point IP_{interfacePoint.Id}", usersToNotify);
-
-
+                if (User.IsInRole("TeamMember"))
+                {
+                    _notificationService.CreateNotification($"{user.FullName} From Department {_context.Departments.FirstOrDefault(n => n.TeamMembersEmails.Contains(user.Email)).Name} Edited Interface Point IP_{interfacePoint.Id}", usersToNotify);
+                }
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -530,12 +582,10 @@ namespace PM.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
         private bool InterfacePointExists(int id)
         {
             return _context.InterfacePoints.Any(e => e.Id == id);
         }
-
 
 
         public async Task<IActionResult> Issue(int id)
@@ -546,14 +596,50 @@ namespace PM.Controllers
                 return NotFound();
             }
 
-            interfacePoint.IssueDate = DateTime.Now;
-            interfacePoint.Status = "InProgress";
+            if (User.IsInRole("Cordinator"))
+            {
+                interfacePoint.IssueDate = DateTime.Now;
+                interfacePoint.Status = "InProgress";
+            }
+            else
+            {
+                interfacePoint.Status = "Pending";
+            }
             _context.Update(interfacePoint);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index), new { id });
         }
 
+        public async Task<IActionResult> SendToDep(int id, int depId)
+        {
+            var interfacePoint = await _context.InterfacePoints.FindAsync(id);
+            if (interfacePoint == null)
+            {
+                return NotFound();
+            }
 
+            var project = await _context.Projects
+                .Include(inc => inc.Departments)
+                .Include(inc => inc.ScopePackages)
+                .FirstOrDefaultAsync(f => f.Id == interfacePoint.ProjectId);
+
+            var dep = project.Departments.FirstOrDefault(f => f.Id == depId);
+
+            if (dep == null)
+            {
+                return NotFound();
+            }
+
+            interfacePoint.DepIds.Add(depId);
+
+            interfacePoint.DepIds = interfacePoint.DepIds.ToHashSet().ToList();
+
+            _context.Update(interfacePoint);
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index), new { id });
+        }
 
         [HttpPost]
         public async Task<IActionResult> ChangeStatus(int id, string status)

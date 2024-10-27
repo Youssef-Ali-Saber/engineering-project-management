@@ -10,9 +10,9 @@
         public string System1 { get; set; }
         public string? System2 { get; set; }
         public string? ExtraSystem { get; set; }
-        public string Category { get; set; } // Phaysical & Funcation or contractual & Organizational Or Resource Or Regulatory Or Other
-        public List<BOQ> BOQs { get; set; } = new List<BOQ>();
-        public List<Activity> Activities { get; set; }=new List<Activity>();
+        public string Category { get; set; }
+        public List<BOQ> BOQs { get; set; } = [];
+        public List<Activity> Activities { get; set; } = [];
         public string? Responsible { get; set; }
         public string? Consultant { get; set; }
         public string? Accountable { get; set; }
@@ -22,11 +22,12 @@
         public DateTime CreatDate { get; set; }
         public DateTime? IssueDate { get; set; }
         public DateTime? CloseDate { get; set; }
-        public List<Documentation>? Documentations { get; set; } = new List<Documentation>();
+        public List<Documentation>? Documentations { get; set; } = [];
         public int ProjectId { get; set; }
         public Project Project { get; set; }
-        public List<Chat> Chat { get; set; } = new List<Chat>();
+        public List<Chat> Chat { get; set; } = [];
         public string Description { get; set; }
-
+        public string CreatorId { get; set; }
+        public List<int> DepIds { get; set; } = [];
     }
 }

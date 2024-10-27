@@ -64,7 +64,7 @@
 
     <div class="row">
         <div class="col text-right">
-            @if (User.IsInRole("TeamMember") || User.IsInRole("Contractor"))
+            @if (User.IsInRole("TeamMember") || User.IsInRole("Contractor") || User.IsInRole("ContractorTeamMember"))
             {
                 <a asp-action="Create" class="btn btn-success"><i class="fa fa-plus-circle"></i> Create New Interface Point</a>
             }
@@ -127,21 +127,28 @@
                                 </td>
                             }
                             <td>
-                                @if (User.IsInRole("TeamMember"))
+                                @if (User.IsInRole("TeamMember") || (@item.Status == "Holding" && !User.IsInRole("TeamManager")))
                                 {
                                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-dark btn-sm mr-1"><i class="fa fa-edit"></i> Edit</a>
-                                }
-                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm mr-1"><i class="fa fa-eye"></i> View</a>
-                                @if (User.IsInRole("ContractorTeamMember") && ViewBag.InterfacePointsAccountable != null && ViewBag.InterfacePointsAccountable.Contains(item))
-                                {
-                                    <a asp-action="Create" asp-controller="InterfaceAgreements" asp-route-Id="@item.Id" class="d-inline-block btn btn-outline-dark btn-sm mr-1">Add_IA</a>
-                                }
-                                @if (!(User.IsInRole("ContractorTeamMember") || User.IsInRole("Contractor")))
-                                {
-                                    <a asp-action="ChatsOfInterfacePoint" asp-controller="Chats" asp-route-id="@item.Id" class="btn btn-secondary btn-sm mr-1">Chat</a>
                                     <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline-block" onsubmit="return confirm('Are you sure you want to delete this interface point?');">
                                         <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete</button>
                                     </form>
+                                }
+                                else if (User.IsInRole("ContractorTeamMember") || User.IsInRole("Contractor"))
+                                {
+                                    @if (ViewBag.ourInterfacePoints.Contains(item) && @item.Status != "Closed")
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-dark btn-sm mr-1"><i class="fa fa-edit"></i> Edit</a>
+                                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline-block" onsubmit="return confirm('Are you sure you want to delete this interface point?');">
+                                            <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete</button>
+                                        </form>
+                                    }
+                                }
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm mr-1"><i class="fa fa-eye"></i> View</a>
+                                <a asp-action="ChatsOfInterfacePoint" asp-controller="Chats" asp-route-id="@item.Id" class="btn btn-secondary btn-sm mr-1">Chat</a>
+                                @if (User.IsInRole("ContractorTeamMember") && ViewBag.InterfacePointsAccountable != null && ViewBag.InterfacePointsAccountable.Contains(item) && (@item.Status != "Holding" && @item.Status !="Pending"))
+                                {
+                                    <a asp-action="Create" asp-controller="InterfaceAgreements" asp-route-Id="@item.Id" class="d-inline-block btn btn-outline-dark btn-sm mr-1">Add_IA</a>
                                 }
                             </td>
                         </tr>

@@ -12,165 +12,162 @@
         <div class="col-md-8">
             <div class="card shadow border-0">
                 <div class="card-body p-4">
-                    @if (User.IsInRole("TeamMember"))
-                    {
-                        <form asp-action="Edit" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
-                            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-                            <input type="hidden" asp-for="Id" />
-                            <div class="form-group mb-3">
-                                <label asp-for="Nature" class="form-label">Nature</label>
-                                <select asp-for="Nature" class="form-control form-control-lg">
-                                    <option value="">--Select--</option>
-                                    <option value="Hard">Hard</option>
-                                    <option value="Soft">Soft</option>
-                                </select>
-                                <span asp-validation-for="Nature" class="text-danger"></span>
-                            </div>
+                    <form asp-action="Edit" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        <input type="hidden" asp-for="Id" />
+                        <div class="form-group mb-3">
+                            <label asp-for="Nature" class="form-label">Nature</label>
+                            <select asp-for="Nature" class="form-control form-control-lg">
+                                <option value="">--Select--</option>
+                                <option value="Hard">Hard</option>
+                                <option value="Soft">Soft</option>
+                            </select>
+                            <span asp-validation-for="Nature" class="text-danger"></span>
+                        </div>
 
-                            <div class="form-group mb-3">
-                                <label asp-for="Description" class="control-label font-weight-bold">Description</label>
-                                <textarea asp-for="Description" class="form-control form-control-lg"></textarea>
-                                <span asp-validation-for="Description" class="text-danger"></span>
-                            </div>
+                        <div class="form-group mb-3">
+                            <label asp-for="Description" class="control-label font-weight-bold">Description</label>
+                            <textarea asp-for="Description" class="form-control form-control-lg"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
 
-                            <div class="form-group mb-3">
-                                <label asp-for="Scope" class="form-label">Scope</label>
-                                <select asp-for="Scope" class="form-control form-control-lg" id="Scope" onchange="toggleFields()">
-                                    <option value="">--Select--</option>
-                                    <option value="Intra">Intra</option>
-                                    <option value="Inter">Inter</option>
-                                    <option value="Exter">Exter</option>
-                                </select>
-                                <span asp-validation-for="Scope" class="text-danger"></span>
-                            </div>
+                        <div class="form-group mb-3">
+                            <label asp-for="Scope" class="form-label">Scope</label>
+                            <select asp-for="Scope" class="form-control form-control-lg" id="Scope" onchange="toggleFields()">
+                                <option value="">--Select--</option>
+                                <option value="Intra">Intra</option>
+                                <option value="Inter">Inter</option>
+                                <option value="Exter">Exter</option>
+                            </select>
+                            <span asp-validation-for="Scope" class="text-danger"></span>
+                        </div>
 
-                            <div class="form-group mb-3" id="ScopePackage1Container">
-                                <label asp-for="ScopePackage1" class="control-label font-weight-bold">Scope Package 1</label>
-                                <select asp-for="ScopePackage1" class="form-control form-control-lg" asp-items="ViewBag?.ScopePackages"></select>
-                                <span asp-validation-for="ScopePackage1" class="text-danger"></span>
-                            </div>
+                        <div class="form-group mb-3" id="ScopePackage1Container">
+                            <label asp-for="ScopePackage1" class="control-label font-weight-bold">Scope Package 1</label>
+                            <select asp-for="ScopePackage1" class="form-control form-control-lg" asp-items="ViewBag?.ScopePackages"></select>
+                            <span asp-validation-for="ScopePackage1" class="text-danger"></span>
+                        </div>
 
-                            <div class="form-group mb-3" id="ScopePackage2Container">
-                                <label asp-for="ScopePackage2" class="control-label font-weight-bold">Scope Package 2</label>
-                                <select asp-for="ScopePackage2" class="form-control form-control-lg" asp-items="ViewBag?.ScopePackages"></select>
-                                <span asp-validation-for="ScopePackage2" class="text-danger"></span>
-                            </div>
+                        <div class="form-group mb-3" id="ScopePackage2Container">
+                            <label asp-for="ScopePackage2" class="control-label font-weight-bold">Scope Package 2</label>
+                            <select asp-for="ScopePackage2" class="form-control form-control-lg" asp-items="ViewBag?.ScopePackages"></select>
+                            <span asp-validation-for="ScopePackage2" class="text-danger"></span>
+                        </div>
 
-                            <div class="form-group mb-3" id="System1Container">
-                                <label asp-for="System1" class="control-label font-weight-bold">System 1</label>
-                                <select asp-for="System1" class="form-control form-control-lg" asp-items="ViewBag?.Systems"></select>
-                                <span asp-validation-for="System1" class="text-danger"></span>
-                            </div>
+                        <div class="form-group mb-3" id="System1Container">
+                            <label asp-for="System1" class="control-label font-weight-bold">System 1</label>
+                            <select asp-for="System1" class="form-control form-control-lg" asp-items="ViewBag?.Systems"></select>
+                            <span asp-validation-for="System1" class="text-danger"></span>
+                        </div>
 
-                            <div class="form-group mb-3" id="System2Container">
-                                <label asp-for="System2" class="control-label font-weight-bold">System 2</label>
-                                <select asp-for="System2" class="form-control form-control-lg" asp-items="ViewBag?.Systems"></select>
-                                <span asp-validation-for="System2" class="text-danger"></span>
-                            </div>
+                        <div class="form-group mb-3" id="System2Container">
+                            <label asp-for="System2" class="control-label font-weight-bold">System 2</label>
+                            <select asp-for="System2" class="form-control form-control-lg" asp-items="ViewBag?.Systems"></select>
+                            <span asp-validation-for="System2" class="text-danger"></span>
+                        </div>
 
-                            <div class="form-group mb-3" id="ExtraSystemContainer">
-                                <label asp-for="ExtraSystem" class="form-label">Extra System</label>
-                                <input asp-for="ExtraSystem" class="form-control form-control-lg" />
-                                <span asp-validation-for="ExtraSystem" class="text-danger"></span>
-                            </div>
+                        <div class="form-group mb-3" id="ExtraSystemContainer">
+                            <label asp-for="ExtraSystem" class="form-label">Extra System</label>
+                            <input asp-for="ExtraSystem" class="form-control form-control-lg" />
+                            <span asp-validation-for="ExtraSystem" class="text-danger"></span>
+                        </div>
 
-                            <div class="form-group mb-3">
-                                <label asp-for="Category" class="form-label">Category</label>
-                                <select asp-for="Category" class="form-control form-control-lg">
-                                    <option>--Select--</option>
-                                    <option value="Physical & Functional">Physical & Functional</option>
-                                    <option value="Contractual & Organizational">Contractual & Organizational</option>
-                                    <option value="Resource">Resource</option>
-                                    <option value="Regulatory">Regulatory</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                                <span asp-validation-for="Category" class="text-danger"></span>
-                            </div>
+                        <div class="form-group mb-3">
+                            <label asp-for="Category" class="form-label">Category</label>
+                            <select asp-for="Category" class="form-control form-control-lg">
+                                <option>--Select--</option>
+                                <option value="Physical & Functional">Physical & Functional</option>
+                                <option value="Contractual & Organizational">Contractual & Organizational</option>
+                                <option value="Resource">Resource</option>
+                                <option value="Regulatory">Regulatory</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <span asp-validation-for="Category" class="text-danger"></span>
+                        </div>
 
-                            <div class="form-group mb-3 col-md-6">
-                                <label asp-for="Responsible" class="control-label font-weight-bold">Responsible</label>
-                                <select asp-for="Responsible" class="form-control form-control-lg" asp-items="ViewBag?.ScopePackages"></select>
-                                <span asp-validation-for="Responsible" class="text-danger"></span>
-                            </div>
+                        <div class="form-group mb-3 col-md-6">
+                            <label asp-for="Responsible" class="control-label font-weight-bold">Responsible</label>
+                            <select asp-for="Responsible" class="form-control form-control-lg" asp-items="ViewBag?.ScopePackages"></select>
+                            <span asp-validation-for="Responsible" class="text-danger"></span>
+                        </div>
 
-                            <div class="form-group mb-3 col-md-6">
-                                <label asp-for="Consultant" class="control-label font-weight-bold">Consultant</label>
-                                <select asp-for="Consultant" class="form-control form-control-lg" asp-items="ViewBag?.ScopePackages"></select>
-                                <span asp-validation-for="Consultant" class="text-danger"></span>
-                            </div>
+                        <div class="form-group mb-3 col-md-6">
+                            <label asp-for="Consultant" class="control-label font-weight-bold">Consultant</label>
+                            <select asp-for="Consultant" class="form-control form-control-lg" asp-items="ViewBag?.ScopePackages"></select>
+                            <span asp-validation-for="Consultant" class="text-danger"></span>
+                        </div>
 
-                            <div class="form-group mb-3 col-md-6">
-                                <label asp-for="Accountable" class="control-label font-weight-bold">Accountable</label>
-                                <select asp-for="Accountable" class="form-control form-control-lg" asp-items="ViewBag?.ScopePackages"></select>
-                                <span asp-validation-for="Accountable" class="text-danger"></span>
-                            </div>
+                        <div class="form-group mb-3 col-md-6">
+                            <label asp-for="Accountable" class="control-label font-weight-bold">Accountable</label>
+                            <select asp-for="Accountable" class="form-control form-control-lg" asp-items="ViewBag?.ScopePackages"></select>
+                            <span asp-validation-for="Accountable" class="text-danger"></span>
+                        </div>
 
-                            <div class="form-group mb-3 col-md-6">
-                                <label asp-for="Informed" class="control-label font-weight-bold">Informed</label>
-                                <select asp-for="Informed" class="form-control form-control-lg" asp-items="ViewBag?.ScopePackages"></select>
-                                <span asp-validation-for="Informed" class="text-danger"></span>
-                            </div>
+                        <div class="form-group mb-3 col-md-6">
+                            <label asp-for="Informed" class="control-label font-weight-bold">Informed</label>
+                            <select asp-for="Informed" class="form-control form-control-lg" asp-items="ViewBag?.ScopePackages"></select>
+                            <span asp-validation-for="Informed" class="text-danger"></span>
+                        </div>
 
-                            <div class="form-group mb-3 col-md-6">
-                                <label asp-for="Supported" class="control-label font-weight-bold">Supported</label>
-                                <select asp-for="Supported" class="form-control form-control-lg" asp-items="ViewBag?.ScopePackages"></select>
-                                <span asp-validation-for="Supported" class="text-danger"></span>
-                            </div>
+                        <div class="form-group mb-3 col-md-6">
+                            <label asp-for="Supported" class="control-label font-weight-bold">Supported</label>
+                            <select asp-for="Supported" class="form-control form-control-lg" asp-items="ViewBag?.ScopePackages"></select>
+                            <span asp-validation-for="Supported" class="text-danger"></span>
+                        </div>
 
-                            <div class="form-group mb-3">
-                                <label class="form-label">BOQs</label>
-                                <table class="table table-bordered">
-                                    <tbody id="boqTable">
-                                        <tr>
-                                            <td>
-                                                <select name="BOQs[0]" class="form-control form-control-lg" asp-items="ViewBag?.BOQs"></select>
-                                            </td>
-                                            <td>
-                                                <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <button type="button" class="btn btn-primary" onclick="addBOQRow()">Add BOQ</button>
-                            </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label">BOQs</label>
+                            <table class="table table-bordered">
+                                <tbody id="boqTable">
+                                    <tr>
+                                        <td>
+                                            <select name="BOQs[0]" class="form-control form-control-lg" asp-items="ViewBag?.BOQs"></select>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-primary" onclick="addBOQRow()">Add BOQ</button>
+                        </div>
 
-                            <div class="form-group mb-3">
-                                <label class="form-label">Activities</label>
-                                <table class="table table-bordered">
-                                    <tbody id="activitiesTable">
-                                        <tr>
-                                            <td>
-                                                <select name="Activities[0]" class="form-control form-control-lg" asp-items="ViewBag?.Activities"></select>
-                                            </td>
-                                            <td>
-                                                <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <button type="button" class="btn btn-primary" onclick="addActivityRow()">Add Activity</button>
-                            </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label">Activities</label>
+                            <table class="table table-bordered">
+                                <tbody id="activitiesTable">
+                                    <tr>
+                                        <td>
+                                            <select name="Activities[0]" class="form-control form-control-lg" asp-items="ViewBag?.Activities"></select>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-primary" onclick="addActivityRow()">Add Activity</button>
+                        </div>
 
-                            <div class="form-group mb-3">
-                                <label class="form-label">Documentations</label>
-                                <table class="table table-bordered">
-                                    <tbody id="documentationTable">
-                                        <tr>
-                                            <td><input name="Documentations[0].DocumentationFile" type="file" class="form-control form-control-lg" /></td>
-                                            <td><input name="Documentations[0].DocumentationDescription" class="form-control form-control-lg" placeholder="Enter description" /></td>
-                                            <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <button type="button" class="btn btn-primary" onclick="addDocumentationRow()">Add Documentation</button>
-                            </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label">Documentations</label>
+                            <table class="table table-bordered">
+                                <tbody id="documentationTable">
+                                    <tr>
+                                        <td><input name="Documentations[0].DocumentationFile" type="file" class="form-control form-control-lg" /></td>
+                                        <td><input name="Documentations[0].DocumentationDescription" class="form-control form-control-lg" placeholder="Enter description" /></td>
+                                        <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-primary" onclick="addDocumentationRow()">Add Documentation</button>
+                        </div>
 
 
-                            <div class="text-center mt-4">
-                                <input type="submit" value="Save" class="btn btn-success btn-lg w-100" />
-                            </div>
-                        </form>
-                    }
+                        <div class="text-center mt-4">
+                            <input type="submit" value="Save" class="btn btn-success btn-lg w-100" />
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

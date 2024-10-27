@@ -2,7 +2,6 @@
 
 @{
     ViewData["Title"] = "Details";
-    int i = 0;
 }
 
 <h2 class="text-center mt-4">@ViewData["Title"]</h2>
@@ -15,84 +14,102 @@
                     <form asp-action="Create" method="post" class="row needs-validation" novalidate>
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-                        <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">Project Name:</label>
-                            <p class="form-control-static">@Model.Project.ProjectName</p>
-                        </div>
-                        <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">Description:</label>
-                            <p class="form-control-static">@Model.Description</p>
-                        </div>
-                        <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">Nature:</label>
-                            <p class="form-control-static">@Model.Nature</p>
-                        </div>
-                        <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">Scope:</label>
-                            <p class="form-control-static">@Model.Scope</p>
-                        </div>
-                        <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">ScopePackage1:</label>
-                            <p class="form-control-static">@Model.ScopePackage1</p>
-                        </div>
-                        <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">ScopePackage2:</label>
-                            <p class="form-control-static">@Model.ScopePackage2</p>
-                        </div>
-                        <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">System1:</label>
-                            <p class="form-control-static">@Model.System1</p>
-                        </div>
-                        <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">System2:</label>
-                            <p class="form-control-static">@Model.System2</p>
-                        </div>
-                        <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">ExtraSystem:</label>
-                            <p class="form-control-static">@Model.ExtraSystem</p>
-                        </div>
-                        
-                        <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">Category:</label>
-                            <p class="form-control-static">@Model.Category</p>
+                        <!-- Project Details -->
+                        <h5 class="text-primary mb-3">Info</h5>
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label>Project Name:</label>
+                                <p class="form-control-static">@Model.Project.ProjectName</p>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Description:</label>
+                                <p class="form-control-static">@Model.Description</p>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Nature:</label>
+                                <p class="form-control-static">@Model.Nature</p>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Scope:</label>
+                                <p class="form-control-static">@Model.Scope</p>
+                            </div>
                         </div>
 
-                        <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">Accountable:</label>
-                            <p class="form-control-static">@Model.Accountable</p>
+                        <!-- Scope and System Details -->
+                        <h5 class="text-primary mt-4 mb-3">Scope and System Details</h5>
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label>Scope Package 1:</label>
+                                <p class="form-control-static">@Model.ScopePackage1</p>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Scope Package 2:</label>
+                                <p class="form-control-static">@Model.ScopePackage2</p>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>System 1:</label>
+                                <p class="form-control-static">@Model.System1</p>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>System 2:</label>
+                                <p class="form-control-static">@Model.System2</p>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Extra System:</label>
+                                <p class="form-control-static">@Model.ExtraSystem</p>
+                            </div>
                         </div>
-                        <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">Consultant:</label>
-                            <p class="form-control-static">@Model.Consultant</p>
-                        </div>
-                        <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">Informed:</label>
-                            <p class="form-control-static">@Model.Informed</p>
-                        </div>
-                        <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">Responsible:</label>
-                            <p class="form-control-static">@Model.Responsible</p>
-                        </div>
-                        <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">Supported:</label>
-                            <p class="form-control-static">@Model.Supported</p>
-                        </div>
-                        <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">CreatDate:</label>
-                            <p class="form-control-static">@Model.CreatDate.ToString("G")</p>
-                        </div>
-                        <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">IssueDate:</label>
-                            <p class="form-control-static">@Model.IssueDate?.ToString("G")</p>
-                        </div>
-                        <div class="form-group mb-3 col-md-6">
-                            <label class="form-label">CloseDate:</label>
-                            <p class="form-control-static">@Model.CloseDate?.ToString("G")</p>
-                        </div>
-                        <hr />
 
+                        <!-- Responsibility Details -->
+                        <h5 class="text-primary mt-4 mb-3">Responsibility Details</h5>
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label>Category:</label>
+                                <p class="form-control-static">@Model.Category</p>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Accountable:</label>
+                                <p class="form-control-static">@Model.Accountable</p>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Consultant:</label>
+                                <p class="form-control-static">@Model.Consultant</p>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Informed:</label>
+                                <p class="form-control-static">@Model.Informed</p>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Responsible:</label>
+                                <p class="form-control-static">@Model.Responsible</p>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Supported:</label>
+                                <p class="form-control-static">@Model.Supported</p>
+                            </div>
+                        </div>
+
+                        <!-- Dates -->
+                        <h5 class="text-primary mt-4 mb-3">Dates</h5>
+                        <div class="row">
+                            <div class="form-group col-md-4">
+                                <label>Creation Date:</label>
+                                <p class="form-control-static">@Model.CreatDate.ToString("G")</p>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Issue Date:</label>
+                                <p class="form-control-static">@Model.IssueDate?.ToString("G")</p>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Close Date:</label>
+                                <p class="form-control-static">@Model.CloseDate?.ToString("G")</p>
+                            </div>
+                        </div>
+
+                        <!-- BOQs and Activities -->
+                        <h5 class="text-primary mt-4 mb-3">Details</h5>
                         <div class="form-group mb-3">
-                            <label class="control-label font-weight-bold">BOQs</label>
+                            <label>BOQs:</label>
                             <select class="form-control">
                                 @foreach (var boq in Model.BOQs)
                                 {
@@ -100,11 +117,8 @@
                                 }
                             </select>
                         </div>
-
-                        <hr />
-
                         <div class="form-group mb-3">
-                            <label class="control-label font-weight-bold">Activities</label>
+                            <label>Activities:</label>
                             <select class="form-control">
                                 @foreach (var activity in Model.Activities)
                                 {
@@ -112,31 +126,67 @@
                                 }
                             </select>
                         </div>
-                        <div class="form-group mb-3">
-                            <label class="control-label font-weight-bold">Documentations:</label>
-                            <br />
-                            <br />
-                            <br />
+
+                        <!-- Documentations -->
+                        <h5 class="text-primary mt-4 mb-3">Documentations</h5>
+                        <div class="form-group">
                             @foreach (var documentation in Model.Documentations ?? new List<Documentation>())
                             {
-                                i ++;
-                                <a href="@documentation.DocumentationLink">Link @i</a>
-                                <span>@documentation.DocumentationDescription</span>
-                                <br />
+                                <div class="mb-2">
+                                    <span>@documentation.DocumentationDescription</span> - <a href="@documentation.DocumentationLink">Link</a>
+                                </div>
                             }
                         </div>
-                        @if (User.IsInRole("Cordinator")&&Model.IssueDate == null)
+
+                        <!-- Buttons -->
+                        <hr />
+                        @if ((User.IsInRole("Cordinator") && Model.Status == "Pending") || ((User.IsInRole("Contractor") || User.IsInRole("TeamManager")) && Model.Status == "Holding"))
                         {
-                            <a asp-action="Issue" asp-route-id="@Model.Id" class="btn btn-secondary btn-sm">
+                            <a asp-action="Issue" asp-route-id="@Model.Id" class="btn btn-primary btn-sm mb-3">
                                 Issue
                             </a>
                         }
-                        <div class="form-group">
-                            <a asp-action="Index" class="btn btn-secondary btn-lg ml-2">Back to List</a>
-                        </div>
+
+                        @if (User.IsInRole("Cordinator"))
+                        {
+                            @if (ViewBag.dep != null)
+                            {
+                                <div class="form-group">
+                                    <label for="departmentSelect">Select Department:</label>
+                                    <select id="departmentSelect" class="form-control" onchange="updateLink()">
+                                        <option value="">Select Department</option>
+                                        @foreach (var item in ViewBag.dep)
+                                        {
+                                            <option value="@item.Value">@item.Text</option>
+                                        }
+                                    </select>
+                                </div>
+                                <a id="sendToDepLink" href="#" class="btn btn-warning btn-sm mt-3" onclick="navigateToSelectedDepartment()">
+                                    Send To This Department
+                                </a>
+                            }
+                        }
+
+                        <a asp-action="Index" class="btn btn-secondary btn-sm mt-3">Back to List</a>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    let depId = "";
+
+    function updateLink() {
+        depId = document.getElementById("departmentSelect").value;
+    }
+
+    function navigateToSelectedDepartment() {
+        if (depId) {
+            window.location.href = `@Url.Action("SendToDep", new { id = Model.Id })?depId=${depId}`;
+        } else {
+            alert("Please select a department before proceeding.");
+        }
+    }
+</script>

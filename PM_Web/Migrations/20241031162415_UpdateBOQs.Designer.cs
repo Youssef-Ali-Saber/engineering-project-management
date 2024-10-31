@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PM.Data;
 
@@ -10,27 +11,14 @@ using PM.Data;
 namespace PM.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241031162415_UpdateBOQs")]
+    partial class UpdateBOQs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.7");
-
-            modelBuilder.Entity("ActivityInterfacePoint", b =>
-                {
-                    b.Property<int>("ActivitiesId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("InterfacePointsId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("ActivitiesId", "InterfacePointsId");
-
-                    b.HasIndex("InterfacePointsId");
-
-                    b.ToTable("ActivityInterfacePoint");
-                });
 
             modelBuilder.Entity("ApplicationUserNotification", b =>
                 {
@@ -199,6 +187,9 @@ namespace PM.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("InterfacePointId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -210,6 +201,8 @@ namespace PM.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("InterfacePointId");
 
                     b.HasIndex("ProjectId");
 
@@ -687,21 +680,6 @@ namespace PM.Migrations
                     b.ToTable("_System");
                 });
 
-            modelBuilder.Entity("ActivityInterfacePoint", b =>
-                {
-                    b.HasOne("PM.Models.Activity", null)
-                        .WithMany()
-                        .HasForeignKey("ActivitiesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PM.Models.InterfacePoint", null)
-                        .WithMany()
-                        .HasForeignKey("InterfacePointsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("ApplicationUserNotification", b =>
                 {
                     b.HasOne("PM.Models.Notification", null)
@@ -785,6 +763,10 @@ namespace PM.Migrations
 
             modelBuilder.Entity("PM.Models.Activity", b =>
                 {
+                    b.HasOne("PM.Models.InterfacePoint", null)
+                        .WithMany("Activities")
+                        .HasForeignKey("InterfacePointId");
+
                     b.HasOne("PM.Models.Project", "Project")
                         .WithMany("Activities")
                         .HasForeignKey("ProjectId")
@@ -913,6 +895,8 @@ namespace PM.Migrations
 
             modelBuilder.Entity("PM.Models.InterfacePoint", b =>
                 {
+                    b.Navigation("Activities");
+
                     b.Navigation("Chat");
 
                     b.Navigation("Documentations");

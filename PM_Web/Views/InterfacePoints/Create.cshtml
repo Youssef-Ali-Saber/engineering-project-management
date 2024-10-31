@@ -13,6 +13,8 @@
                 <div class="card-body p-4">
                     <form asp-action="Create" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        
+                        <input asp-for="ProjectId" value="@ViewBag.projectId" hidden />
 
                         <div class="form-group mb-3">
                             <label asp-for="Nature" class="form-label">Nature</label>

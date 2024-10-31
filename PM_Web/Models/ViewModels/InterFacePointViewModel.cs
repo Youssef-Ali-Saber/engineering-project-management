@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-
-namespace PM.Models.ViewModels
+﻿namespace PM.Models.ViewModels
 {
     public class InterFacePointViewModel
     {
@@ -22,5 +20,6 @@ namespace PM.Models.ViewModels
         public string? Supported { get; set; }
         public List<Documentation>? Documentations { get; set; } = new List<Documentation>();
         public string Description { get; set; }
+        public int ProjectId { get; set; }
     }
 }

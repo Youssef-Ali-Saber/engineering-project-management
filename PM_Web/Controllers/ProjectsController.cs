@@ -22,7 +22,6 @@ namespace PM.Controllers
         }
 
         // GET: Projects
-
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -82,10 +81,10 @@ namespace PM.Controllers
                 DeliveryStrategies = viewModel.DeliveryStrategies,
                 ContractingStrategies = viewModel.ContractingStrategies,
                 OwnerId = ownerId,
-                Owners = viewModel.Owners?.Select(s => new Owner { Name = s}).ToList(),
+                Owners = viewModel.Owners?.Select(s => new Owner { Name = s }).ToList(),
                 Systems = viewModel.Systems?.Select(s => new _System { Name = s }).ToList(),
-                ScopePackages = viewModel.ScopePackages?.Select(s => new ScopePackage { Name = s.Name, ManagerEmail = s.InterfaceManager.Email}).ToList(),
-                BOQs= viewModel.BOQs?.Select(b => new BOQ
+                ScopePackages = viewModel.ScopePackages?.Select(s => new ScopePackage { Name = s.Name, ManagerEmail = s.InterfaceManager.Email }).ToList(),
+                BOQs = viewModel.BOQs?.Select(b => new BOQ
                 {
                     Quantity = b.Quantity,
                     Cost = b.Cost,
@@ -106,7 +105,7 @@ namespace PM.Controllers
                 }).ToList()
             };
 
-            if(viewModel.ScopePackages is not null)
+            if (viewModel.ScopePackages is not null)
             {
                 foreach (var scopePackage in viewModel.ScopePackages)
                 {
@@ -116,8 +115,8 @@ namespace PM.Controllers
                     }
                 }
             }
-            
-            if(viewModel.Departments is not null)
+
+            if (viewModel.Departments is not null)
             {
                 foreach (var department in viewModel.Departments)
                 {
@@ -134,11 +133,7 @@ namespace PM.Controllers
                     }
                 }
             }
-            
 
-
-
-            
             _context.Projects.Add(project);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -180,18 +175,8 @@ namespace PM.Controllers
                 ProjectStage = project.ProjectStage,
                 DeliveryStrategies = project.DeliveryStrategies,
                 ContractingStrategies = project.ContractingStrategies,
-                Owners = project.Owners.Select(s => s.Name ).ToList(),
-                Systems = project.Systems.Select(s => s.Name ).ToList(),
-                ScopePackages = project.ScopePackages.Select(sp => new ScopePackageViewModel
-                {
-                    Name = sp.Name,
-                    InterfaceManager = new TeamMember
-                    {
-                        Name = sp.ManagerEmail,  // Assuming you have a property for the name of the manager
-                        Email = sp.ManagerEmail,
-                        Password = "" // Assuming password is not stored in this context
-                    }
-                }).ToList(),
+                Owners = project.Owners.Select(s => s.Name).ToList(),
+                Systems = project.Systems.Select(s => s.Name).ToList(),
                 BOQs = project.BOQs.Select(boq => new BOQViewModel
                 {
                     Name = boq.Name,
@@ -205,22 +190,6 @@ namespace PM.Controllers
                     StartDate = activity.StartDate,
                     FinishDate = activity.EndDate
                 }).ToList(),
-                Departments = project.Departments.Select(department => new DepartmentViewModel
-                {
-                    Name = department.Name,
-                    TeamManager = new TeamMember
-                    {
-                        Name = department.TeamManagerEmail, // Assuming you have a property for the name of the team manager
-                        Email = department.TeamManagerEmail,
-                        Password = "" // Assuming password is not stored in this context
-                    },
-                    TeamMembers = department.TeamMembersEmails.Select(email => new TeamMember
-                    {
-                        Email = email,
-                        Name = "", // Assuming you have a way to get the name of the team members
-                        Password = "" // Assuming password is not stored in this context
-                    }).ToList()
-                }).ToList()
             };
 
             return View(viewModel);
@@ -259,85 +228,94 @@ namespace PM.Controllers
             project.ProjectStage = viewModel.ProjectStage;
             project.DeliveryStrategies = viewModel.DeliveryStrategies;
             project.ContractingStrategies = viewModel.ContractingStrategies;
-            
-            if (viewModel.Owners != null)
+
+            project.Owners = [];
+
+            foreach (var owner in viewModel.Owners)
             {
-                foreach (var owner in viewModel.Owners)
-                {
-                    project.Owners.Add(new Owner { Name = owner, projectId = project.Id });
-                }
-            }
-            
-            if (viewModel.Systems != null)
-            {
-                foreach (var system in viewModel.Systems)
-                {
-                    project.Systems.Add(new _System { Name = system, projectId = project.Id });
-                }
+                project.Owners.Add(new Owner { Name = owner, projectId = project.Id });
             }
 
-            
+            project.Systems = [];
+
+            foreach (var system in viewModel.Systems)
+            {
+                project.Systems.Add(new _System { Name = system, projectId = project.Id });
+            }
+
+
             // Update ScopePackages
-            foreach (var spVM in viewModel.ScopePackages)
+
+            project.ScopePackages ??= [];
+
+            foreach (var spVm in viewModel.ScopePackages)
             {
                 project.ScopePackages.Add(new ScopePackage
                 {
-                    Name = spVM.Name,
-                    ManagerEmail = spVM.InterfaceManager.Email,
+                    Name = spVm.Name,
+                    ManagerEmail = spVm.InterfaceManager.Email,
                     ProjectId = project.Id
                 });
 
-                if (!await CreateUser(spVM.InterfaceManager, "TeamManager"))
+                if (!await CreateUser(spVm.InterfaceManager, "Contractor"))
                 {
                     return View(viewModel);
                 }
-
             }
 
             // Update BOQs
-            foreach (var boqVM in viewModel.BOQs)
+
+            project.BOQs = [];
+
+            foreach (var boqVm in viewModel.BOQs)
             {
                 project.BOQs.Add(new BOQ
                 {
-                    Name = boqVM.Name,
-                    Quantity = boqVM.Quantity,
-                    Cost = boqVM.Cost,
-                    Unit = boqVM.Unit,
+                    Name = boqVm.Name,
+                    Quantity = boqVm.Quantity,
+                    Cost = boqVm.Cost,
+                    Unit = boqVm.Unit,
                     ProjectId = project.Id
                 });
             }
 
             // Update Activities
-            foreach (var activityVM in viewModel.Activities)
+
+            project.Activities = [];
+
+            foreach (var activityVm in viewModel.Activities)
             {
                 project.Activities.Add(new Activity
                 {
-                    Name = activityVM.Name,
-                    StartDate = activityVM.StartDate,
-                    EndDate = activityVM.FinishDate,
+                    Name = activityVm.Name,
+                    StartDate = activityVm.StartDate,
+                    EndDate = activityVm.FinishDate,
                     ProjectId = project.Id
                 });
             }
 
             // Update Departments
-            foreach (var departmentVM in viewModel.Departments)
+
+            project.Departments ??= [];
+
+            foreach (var departmentVm in viewModel.Departments)
             {
                 var department = new Department
                 {
-                    Name = departmentVM.Name,
-                    TeamManagerEmail = departmentVM.TeamManager.Email,
-                    TeamMembersEmails = departmentVM.TeamMembers.Select(tm => tm.Email).ToList(),
+                    Name = departmentVm.Name,
+                    TeamManagerEmail = departmentVm.TeamManager.Email,
+                    TeamMembersEmails = departmentVm.TeamMembers.Select(tm => tm.Email).ToList(),
                     ProjectId = project.Id
                 };
                 project.Departments.Add(department);
-                foreach (var teamMember in departmentVM.TeamMembers)
+                foreach (var teamMember in departmentVm.TeamMembers)
                 {
                     if (!await CreateUser(teamMember, "TeamMember"))
                     {
                         return View(viewModel);
                     }
                 }
-                if (!await CreateUser(departmentVM.TeamManager, "TeamManager"))
+                if (!await CreateUser(departmentVm.TeamManager, "TeamManager"))
                 {
                     return View(viewModel);
                 }
@@ -354,10 +332,8 @@ namespace PM.Controllers
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+
+                throw;
             }
 
             return RedirectToAction(nameof(Index));
@@ -385,67 +361,57 @@ namespace PM.Controllers
 
 
 
-
-
-
-
-
         //---------------------------------------------------------------------
         //---------------------------------------------------------------------
         //---------------------------------------------------------------------
-        private async Task<bool> CreateUser(TeamMember teamMember,string role)
+        private async Task<bool> CreateUser(TeamMember teamMember, string role)
         {
             var user = await _userManager.FindByEmailAsync(teamMember.Email);
-            if (user == null)
+            if (user != null)
             {
-                var userTeamMember = new ApplicationUser
+                return true;
+            }
+            var userTeamMember = new ApplicationUser
+            {
+                FullName = teamMember.Name,
+                UserName = teamMember.Email,
+                Email = teamMember.Email
+            };
+            var resultOfCreate = await _userManager.CreateAsync(userTeamMember);
+            if (resultOfCreate.Succeeded)
+            {
+                userTeamMember.PasswordHash = teamMember.Password;
+
+                var resultRole = await _userManager.AddToRoleAsync(userTeamMember, role);
+                if (resultRole.Succeeded)
                 {
-                    FullName = teamMember.Name,
-                    UserName = teamMember.Email,
-                    Email = teamMember.Email
-                };
-                var resultOfCreate = await _userManager.CreateAsync(userTeamMember, teamMember.Password);
-                if (resultOfCreate.Succeeded)
-                {
-                    var resultRole = await _userManager.AddToRoleAsync(userTeamMember, role);
-                    if (!resultRole.Succeeded)
-                    {
-                        var resultDelete = await _userManager.DeleteAsync(userTeamMember);
-                        if (resultDelete.Succeeded)
-                        {
-                            ModelState.AddModelError(string.Empty, "Failed to create user");
-                        }
-                        else
-                        {
-                            foreach (var error in resultDelete.Errors)
-                            {
-                                ModelState.AddModelError(string.Empty, error.Description);
-                            }
-                        }
-                        foreach (var error in resultRole.Errors)
-                        {
-                            ModelState.AddModelError(string.Empty, error.Description);
-                        }
-                        return false;
-                    }
                     return true;
+                }
+                var resultDelete = await _userManager.DeleteAsync(userTeamMember);
+                if (resultDelete.Succeeded)
+                {
+                    ModelState.AddModelError(string.Empty, "Failed to create user");
                 }
                 else
                 {
-                    foreach (var error in resultOfCreate.Errors)
+                    foreach (var error in resultDelete.Errors)
                     {
                         ModelState.AddModelError(string.Empty, error.Description);
                     }
-                    return false;
+                }
+                foreach (var error in resultRole.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
             else
             {
-                ModelState.AddModelError(string.Empty, "User already exists");
-                return false;
+                foreach (var error in resultOfCreate.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
             }
-
-
+            return false;
         }
     }
 }

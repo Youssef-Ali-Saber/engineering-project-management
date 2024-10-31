@@ -1,0 +1,13 @@
+﻿
+@media print {
+    /* Hide navigation bar, footer, buttons, etc. */
+    .navbar, .footer, .no-print {
+        display: none;
+    }
+
+    /* Adjust margins, font-size for print */
+    body {
+        margin: 0;
+        font-size: 12pt;
+    }
+}

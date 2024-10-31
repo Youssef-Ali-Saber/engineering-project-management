@@ -45,6 +45,8 @@
                         }
                     </div>
                 }
+                
+
                 @if (User.IsInRole("Contractor") || User.IsInRole("ContractorTeamMember") || User.IsInRole("Cordinator"))
                 {
                     <hr />
@@ -57,16 +59,47 @@
                         <button type="button" class="btn btn-outline-primary" data-filter="role" data-value="Supported" onclick="applyFilter('role', 'Supported')">Supported (@(ViewBag.Supported ?? 0))</button>
                     </div>
                 }
+                
+                <hr />
+                <div class="btn-group mb-2" role="group" aria-label="BOQ">
+                    <button type="button" class="btn btn-outline-primary" data-filter="boq" data-value="" onclick="applyFilter('boq', '')">All BOQs</button>
+                    @foreach (var boq in ViewBag.BOQList)
+                    {
+                        <button type="button" class="btn btn-outline-primary" data-filter="boq" data-value="@boq" onclick="applyFilter('boq', '@boq')">@boq (@(ViewBag.BoqCounts.ContainsKey(boq) ? ViewBag.BoqCounts[boq] : 0))</button>
+                    }
+                </div>
+
+                <hr />
+                <div class="btn-group mb-2" role="group" aria-label="Activity">
+                    <button type="button" class="btn btn-outline-primary" data-filter="activity" data-value="" onclick="applyFilter('activity', '')">All Activities</button>
+                    @foreach (var activity in ViewBag.ActivityList)
+                    {
+                        <button type="button" class="btn btn-outline-primary" data-filter="activity" data-value="@activity" onclick="applyFilter('activity', '@activity')">@activity (@(ViewBag.ActivityCounts.ContainsKey(activity) ? ViewBag.ActivityCounts[activity] : 0))</button>
+                    }
+                </div>
             </form>
             <hr />
         </div>
     </div>
 
     <div class="row">
-        <div class="col text-right">
+        <div class="col">
             @if (User.IsInRole("TeamMember") || User.IsInRole("Contractor") || User.IsInRole("ContractorTeamMember"))
             {
-                <a asp-action="Create" class="btn btn-success"><i class="fa fa-plus-circle"></i> Create New Interface Point</a>
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <div class="form-group">
+                            @Html.DropDownList("projectId", ViewBag.Projects, "Select Project", new { @class = "form-control rounded-pill", id = "projectSelect" })
+                            <small class="form-text text-muted">Choose the project you want to work on from the list.</small>
+                        </div>
+                        <div class="text-right mt-2">
+                            <a asp-action="Create" class="btn btn-success" id="createLink">
+                                <i class="fa fa-plus-circle"></i> Create New Interface Point
+                            </a>
+                        </div>
+                    </div>
+                   
+                </div>
             }
         </div>
     </div>
@@ -167,7 +200,7 @@
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css"/>
 
     <script>
         $(document).ready(function () {
@@ -201,5 +234,12 @@
             urlParams.set(filter, value);
             window.location.search = urlParams.toString();
         }
+
+        document.getElementById("projectSelect").addEventListener("change", function () {
+            var projectId = this.value;
+            var createLink = document.getElementById("createLink");
+            createLink.href = `@Url.Action("Create")?projectId=${projectId}`;
+        });
     </script>
+
 }

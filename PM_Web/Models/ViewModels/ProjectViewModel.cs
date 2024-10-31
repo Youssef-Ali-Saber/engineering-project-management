@@ -34,7 +34,7 @@ namespace PM.Models.ViewModels
         [Required]
         public string ContractingStrategies { get; set; }
 
-        public List<string> Owners { get; set; } 
+        public List<string> Owners { get; set; }
 
         public List<ScopePackageViewModel> ScopePackages { get; set; } = new List<ScopePackageViewModel>();
 

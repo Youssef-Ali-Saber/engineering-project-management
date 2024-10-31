@@ -114,7 +114,13 @@ namespace PM.Controllers
             {
                 interfaceAgreements = interfaceAgreements.Where(ia => ia.InterfacePoint.Project.OwnerId == user.Id && ia.IssueDate != null).ToList();
 
-                ViewBag.ScopePackageList = _context.ScopePackages.Select(s => s.ManagerEmail).ToList();
+                var projects = _context.Projects.Where(m => m.OwnerId == user.Id)
+                    .Include(project => project.ScopePackages).ToList();
+
+                List<string> scopePackages = [];
+
+                ViewBag.ScopePackageList = projects.Aggregate(scopePackages, (current, project) => current.Union(project.ScopePackages.Select(sp => sp.ManagerEmail).ToList()).ToList());
+
 
                 if (!string.IsNullOrEmpty(scopePackage))
                 {
@@ -200,6 +206,16 @@ namespace PM.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _context.Users.FindAsync(userId);
             var interfacePoint = await _context.InterfacePoints.FindAsync(viewModel.InterfacePointId);
+
+            if (interfacePoint == null)
+            {
+                return NotFound("interface point not found");
+            }
+
+            interfacePoint.Status = "InProgress";
+
+            _context.InterfacePoints.Update(interfacePoint);
+
             var interfaceAgreement = new InterfaceAgreement
             {
                 AccountableTeamMemberEmail = user?.Email,

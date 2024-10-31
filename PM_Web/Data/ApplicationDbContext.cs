@@ -2,11 +2,10 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PM.Models;
-using System.Reflection.Emit;
 
 namespace PM.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser,IdentityRole,string>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole, string>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -40,11 +39,11 @@ namespace PM.Data
 
             modelBuilder.Entity<InterfacePoint>()
                 .HasMany(ip => ip.BOQs)
-                .WithOne();
+                .WithMany(boq => boq.InterfacePoints);
 
             modelBuilder.Entity<InterfacePoint>()
                 .HasMany(ip => ip.Activities)
-                .WithOne();
+                .WithMany(act => act.InterfacePoints);
 
             modelBuilder.Entity<InterfaceAgreement>()
                 .HasMany(ip => ip.Chat)
@@ -57,5 +56,5 @@ namespace PM.Data
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
-    
+
 }

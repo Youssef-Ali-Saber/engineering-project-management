@@ -109,6 +109,14 @@
                             <label class="control-label font-weight-bold">Owners</label>
                             <table class="table table-bordered">
                                 <tbody id="ownersTable">
+                                @for (var i = 0; i < Model.Owners.Count; i++)
+                                {
+                                    <tr>
+                                        <td>@(i + 1)</td>
+                                        <td><input name="Owners[@i]" class="form-control form-control-lg" value="@Model.Owners[i]" placeholder="Owner name" /></td>
+                                        <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
+                                    </tr>
+                                }
                                 </tbody>
                             </table>
                             <button type="button" class="btn btn-primary" onclick="addOwnerRow()">Add Owner</button>
@@ -119,11 +127,89 @@
                             <label class="control-label font-weight-bold">Systems</label>
                             <table class="table table-bordered" id="systemsTable">
                                 <tbody id="systemsBody">
+                                @for (int i = 0; i < Model.Systems.Count; i++)
+                                {
+                                    <tr>
+                                        <td>@(i + 1)</td>
+                                        <td><input name="Systems[@i]" class="form-control form-control-lg" value="@Model.Systems[i]" placeholder="System name" /></td>
+                                        <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
+                                    </tr>
+                                }
                                 </tbody>
                             </table>
                             <button type="button" class="btn btn-primary" onclick="addSystemRow()">Add System</button>
                         </div>
 
+                        <hr />
+
+                        <div class="form-group mb-3">
+                            <label class="control-label font-weight-bold">BOQs</label>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>BOQ Name</th>
+                                        <th>Quantity</th>
+                                        <th>Cost per Unit</th>
+                                        <th>Unit</th>
+                                        <th>Total Cost</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="boqTable">
+                                    @for (int i = 0; i < Model.BOQs.Count; i++)
+                                    {
+                                        <tr>
+                                            <td>@(i + 1)</td>
+                                            <td><input name="BOQs[@i].Name" class="form-control form-control-lg" value="@Model.BOQs[i].Name" placeholder="BOQ name" /></td>
+                                            <td><input name="BOQs[@i].Quantity" class="form-control form-control-lg" value="@Model.BOQs[i].Quantity" placeholder="Quantity" oninput="updateBOQTotalCost(this)" /></td>
+                                            <td><input name="BOQs[@i].Cost" class="form-control form-control-lg" value="@Model.BOQs[i].Cost" placeholder="Cost per unit" oninput="updateBOQTotalCost(this)" /></td>
+                                            <td><input name="BOQs[@i].Unit" class="form-control form-control-lg" value="@Model.BOQs[i].Unit" placeholder="Unit" /></td>
+                                            <td><input name="BOQs[@i].TotalCost" class="form-control form-control-lg" value="@(Model.BOQs[i].Cost*Model.BOQs[i].Quantity)" placeholder="Total cost" readonly /></td>
+                                            <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
+                                        </tr>
+                                    }
+                                    <tr>
+                                        <td colspan="5" class="text-right font-weight-bold">Grand Total Cost:</td>
+                                        <td><input id="grandTotalCost" class="form-control form-control-lg" value="@Model.BOQs.Sum(b => b.Cost*b.Quantity)" readonly /></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-primary" onclick="addBOQRow()">Add BOQ</button>
+                        </div>
+
+                        <hr />
+
+                        <div class="form-group mb-3">
+                            <label class="control-label font-weight-bold">Activities</label>
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Start Date</th>
+                                    <th>Finish Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody id="activitiesTable">
+                                @for (var i = 0; i < Model.Activities.Count; i++)
+                                {
+                                    <tr>
+                                        <td>@(i + 1)</td>
+                                        <td><input name="Activities[@i].Name" class="form-control form-control-lg" value="@Model.Activities[i].Name" placeholder="Activity name" /></td>
+                                        <td><input type="date" name="Activities[@i].StartDate" class="form-control form-control-lg" value="@Model.Activities[i].StartDate.ToString("yyyy-MM-dd")" /></td>
+                                        <td><input type="date" name="Activities[@i].FinishDate" class="form-control form-control-lg" value="@Model.Activities[i].FinishDate.ToString("yyyy-MM-dd")" /></td>
+                                        <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-primary" onclick="addActivityRow()">Add Activity</button>
+                        </div>
+
+                        
                         <hr />
 
                         <div class="form-group mb-3">
@@ -143,45 +229,6 @@
                                 </tbody>
                             </table>
                             <button type="button" class="btn btn-primary" onclick="addDepartmentRow()">Add Department</button>
-                        </div>
-
-                        <hr />
-
-                        <div class="form-group mb-3">
-                            <label class="control-label font-weight-bold">BOQs</label>
-                            <table class="table table-bordered">
-                                <tbody id="boqTable">
-                                </tbody>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td><input id="grandTotalCost" class="form-control form-control-lg" readonly /></td>
-                                    <td></td>
-                                </tr>
-                            </table>
-                            <button type="button" class="btn btn-primary" onclick="addBOQRow()">Add BOQ</button>
-                        </div>
-                        <hr />
-
-                        <div class="form-group mb-3">
-                            <label class="control-label font-weight-bold">Activities</label>
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Name</th>
-                                        <th>Start Date</th>
-                                        <th>Finish Date</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="activitiesTable">
-                                </tbody>
-                            </table>
-                            <button type="button" class="btn btn-primary" onclick="addActivityRow()">Add Activity</button>
                         </div>
 
                         <div class="form-group">

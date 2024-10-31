@@ -1,0 +1,47 @@
+﻿@model IEnumerable<PM.Models.ViewModels.User>
+
+@{
+    ViewData["Title"] = "Users";
+}
+
+<div class="container">
+    <div class="card shadow-lg mt-5">
+        <div class="card-header bg-primary text-white">
+            <h3 class="text-center mb-0">Team Members</h3>
+        </div>
+        <div class="card-body p-4">
+            <table class="table table-bordered table-hover">
+                <thead class="thead-light">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Password</th>
+                    <th scope="col">Role</th>
+                </tr>
+                </thead>
+                <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">No team members found.</td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var member in Model.Select((value, index) => new { value, index }))
+                    {
+                        <tr>
+                            <th scope="row">@(member.index + 1)</th>
+                            <td>@member.value.Name</td>
+                            <td>@member.value.Email</td>
+                            <td>@member.value.Password</td>
+                            <td>@member.value.Role</td>
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
